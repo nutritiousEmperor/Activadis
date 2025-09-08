@@ -2,7 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\MedewerkerController;
+use App\Http\Controllers\AdminController;use App\Http\Controllers\MedewerkerController;
 
 
 Route::get('/', function () {
@@ -23,5 +23,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/medewerkers', [MedewerkerController::class, 'index'])->name('medewerkers.index');
 });
 
+
+Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
 require __DIR__.'/auth.php';
