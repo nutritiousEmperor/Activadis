@@ -4,6 +4,16 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 
+
+
+  
+  Route::middleware(['auth'])->group(function () {
+    // Admin dashboard
+    Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
+
+    // Activiteit opslaan
+    Route::post('/admin/activities', [AdminController::class, 'store'])->name('admin.activities.store');
+  });
 Route::get('/', function () {
     return view('welcome');
 });

@@ -45,6 +45,7 @@
                             </x-dropdown-link>
                          <?php } ?>
 
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -89,6 +90,10 @@
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
+                </x-responsive-nav-link>
+
+                <x-responsive-nav-link :href="route('admin.index')">
+                    {{ __('Admin') }}
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
