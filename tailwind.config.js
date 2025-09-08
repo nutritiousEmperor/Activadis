@@ -14,6 +14,12 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            colors: {
+                primary: '#f4af01',      // Oranje/kots geel
+                darkblue: '#0e132e',     // Donker blauw
+                titlegray: '#414140',    // Grijs (naam van logo)
+                bgwhite: '#f8f9f9',      // Witte achtergrond
+            },
         },
     },
 
