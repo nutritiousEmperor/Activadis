@@ -1,0 +1,62 @@
+<section>
+    <header>
+        <h2 class="text-lg font-medium text-gray-900">
+            {{ __('Account registratie') }}
+        </h2>
+
+        <p class="mt-1 text-sm text-gray-600">
+            {{ __("Maak een account aan voor een medewerker. Die krijgt vervolgens een e-mail om een wachtwoord aan te maken.") }}
+        </p>
+    </header>
+
+
+    <form method="post" action="{{ route('registerAccount.send') }}" class="mt-6 space-y-6">
+        @csrf
+
+
+        <div>
+            <x-input-label for="name" :value="__('Name')" />
+            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" />
+            <x-input-error class="mt-2" :messages="$errors->get('name')" />
+        </div>
+
+        <div>
+            <x-input-label for="email" :value="__('Email')" />
+            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="username" />
+            <x-input-error class="mt-2" :messages="$errors->get('email')" />
+
+           
+        </div>
+
+        <div>
+            <x-input-label for="functie" :value="__('Functie')" />
+            <x-text-input id="functie" name="functie" type="text" class="mt-1 block w-full" required autofocus autocomplete="functie" />
+            <x-input-error class="mt-2" :messages="$errors->get('functie')" />
+        </div>
+
+        <div>
+            <x-input-label for="rol" :value="__('Rol voor account')" />
+            <input type="radio" name="rol" id="rol" value="user" checked> 
+            <label for="rol">User</label> <br>
+            <input type="radio" name="rol" id="rol" value="admin">
+            <label for="rol">Admin</label>
+            <x-input-error class="mt-2" :messages="$errors->get('functie')" />
+        </div>
+
+
+
+        <div class="flex items-center gap-4">
+            <x-primary-button>{{ __('Maak account') }}</x-primary-button>
+
+            @if (session('status') === 'profile-updated')
+                <p
+                    x-data="{ show: true }"
+                    x-show="show"
+                    x-transition
+                    x-init="setTimeout(() => show = false, 2000)"
+                    class="text-sm text-gray-600"
+                >{{ __('Account aangemaakt.') }}</p>
+            @endif
+        </div>
+    </form>
+</section>
