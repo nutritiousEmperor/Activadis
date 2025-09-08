@@ -1,12 +1,20 @@
 <?php
-
-namespace App\Http\Controllers;
-
-use Illuminate\Http\Request;
 use App\Models\Activity;
 
 class AdminController extends Controller
 {
+  
+      public function dashboard()
+    {
+        $user = Auth::user();
+        if($user->role == 'admin')
+        {
+            return view('admin.dashboard');
+        } else {
+            abort(403, 'Unauthorized.');
+        }
+        
+    }
     // Admin dashboard pagina
     public function index()
     {
@@ -39,4 +47,4 @@ class AdminController extends Controller
     return redirect()->route('admin.index')->with('success', 'Activiteit succesvol aangemaakt!');
 }
 
-}
+

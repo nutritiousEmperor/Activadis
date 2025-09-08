@@ -38,9 +38,13 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
-                        <x-dropdown-link :href="route('admin.index')">
-                            {{ __('Admin') }}
-                        </x-dropdown-link>
+                        <!-- admin page -->
+                         <?php if (auth()->user()->isAdmin()) { ?>
+                            <x-dropdown-link :href="route('admin.dashboard')">
+                                {{ __('Admin') }}
+                            </x-dropdown-link>
+                         <?php } ?>
+
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">

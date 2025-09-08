@@ -4,16 +4,16 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 
-Route::middleware(['auth'])->group(function () {
+
+
+  
+  Route::middleware(['auth'])->group(function () {
     // Admin dashboard
     Route::get('/admin', [AdminController::class, 'index'])->name('admin.index');
 
     // Activiteit opslaan
     Route::post('/admin/activities', [AdminController::class, 'store'])->name('admin.activities.store');
-});
-
-
-
+  });
 Route::get('/', function () {
     return view('welcome');
 });
@@ -29,5 +29,7 @@ Route::middleware('auth')->group(function () {
 
     Route::middleware('role:user')->delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
 require __DIR__.'/auth.php';
