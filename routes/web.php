@@ -1,28 +1,31 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\AdminController;use App\Http\Controllers\MedewerkerController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\AdminController;
+use App\Http\Controllers\ActiviteitenController;
 
+// Publieke homepage: activiteitenlijst
+Route::get('/', [ActiviteitenController::class, 'index'])->name('activiteiten.index');
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Gast-inschrijving (popup)
+Route::post('/activiteiten/inschrijven/guest', [ActiviteitenController::class, 'guestSignup'])
+    ->name('activiteiten.guest');
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+// Ingelogde inschrijving (geen popup)
+Route::post('/activiteiten/inschrijven', [ActiviteitenController::class, 'authSignup'])
+    ->middleware('auth')
+    ->name('activiteiten.auth');
+
+// Overige routes
+Route::get('/dashboard', fn () => view('dashboard'))
+    ->middleware(['auth','verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
-
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
-
     Route::middleware('role:user')->delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
-
-    Route::get('/medewerkers', [MedewerkerController::class, 'index'])->name('medewerkers.index');
 });
-
 
 Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
 
