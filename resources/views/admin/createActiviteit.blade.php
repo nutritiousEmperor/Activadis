@@ -17,22 +17,24 @@
             }
         }
     </script>
+    <!-- SweetAlert2 CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </head>
-<body class="min-h-screen flex flex-col bg-covadisblue">
+<body class="min-h-screen flex flex-col bg-white"><!-- Achtergrond wit gemaakt -->
 
     <!-- Header -->
-    <header class="bg-white shadow-md">
+    <header class="bg-covadisyellow shadow-md"><!-- Header geel gemaakt -->
         <div class="max-w-7xl mx-auto px-9 py-7 flex items-center justify-between">
             <!-- Logo -->
             <div class="flex items-center space-x-3">
                 <img src="/images/covadis-logo.png" alt="Covadis Logo" class="h-10">
                 <span class="text-lg font-semibold text-covadisblue">Covadis</span>
             </div>
-            <!-- Navigatie (optioneel) -->
-            <nav class="hidden md:flex space-x-6 text-gray-700 font-medium">
-                <a href="#" class="hover:text-covadisyellow">Home</a>
-                <a href="#" class="hover:text-covadisyellow">Activiteiten</a>
-                <a href="#" class="hover:text-covadisyellow">Contact</a>
+            <!-- Navigatie -->
+            <nav class="hidden md:flex space-x-6 text-covadisblue font-medium">
+                <a href="#" class="hover:text-white">Home</a>
+                <a href="#" class="hover:text-white">Activiteiten</a>
+                <a href="#" class="hover:text-white">Contact</a>
             </nav>
         </div>
     </header>
@@ -41,6 +43,8 @@
     <main class="flex-grow flex items-center justify-center px-4">
         <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md">
             <h3 class="text-2xl font-bold mb-6 text-center text-covadisblue">Nieuwe Activiteit</h3>
+
+            <!-- Formulier -->
             <form method="POST" action="{{ route('admin.activities.store') }}">
                 @csrf
 
@@ -80,5 +84,42 @@
             </form>
         </div>
     </main>
+
+    <!-- SweetAlert2 Scripts -->
+    @if(session('success'))
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Succes!',
+                text: '{{ session('success') }}',
+                icon: 'success',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#fbbf24',
+                background: '#fff'
+            });
+        });
+    </script>
+    @endif
+
+    @if ($errors->any())
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            Swal.fire({
+                title: 'Oeps!',
+                html: `
+                    <ul style="text-align: left;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                `,
+                icon: 'error',
+                confirmButtonText: 'OK',
+                confirmButtonColor: '#fbbf24',
+            });
+        });
+    </script>
+    @endif
+
 </body>
 </html>
