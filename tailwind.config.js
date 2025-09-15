@@ -15,10 +15,10 @@ export default {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
             colors: {
-                primary: '#f4af01',      // Oranje/kots geel
-                darkblue: '#0e132e',     // Donker blauw
-                titlegray: '#414140',    // Grijs (naam van logo)
-                bgwhite: '#f8f9f9',      // Witte achtergrond
+                primary: '#0b0c2f',
+                secondary: '#0f1f3b',
+                main: '#fba21a',
+                taps: '#eaf4f7',
             },
         },
     },

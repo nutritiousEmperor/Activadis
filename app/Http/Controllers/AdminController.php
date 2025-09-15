@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+use App\Models\User;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -11,8 +12,11 @@ class AdminController extends Controller
     {
         $user = Auth::user();
         if($user->role == 'admin')
-        {
-            return view('admin.dashboard');
+        {       
+            $totalUsers = User::count();
+            $totalAdmins = User::where('role', 'admin')->count();
+
+            return view('admin.dashboard', ['totalUsers'   => $totalUsers, 'totalAdmins'   => $totalAdmins]);
         } else {
             abort(403, 'Unauthorized.');
         }
