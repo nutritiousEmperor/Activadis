@@ -28,6 +28,15 @@ Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('adm
 Route::get('/admin/registerUser', [UserController::class, 'show'])->name('admin.registerUser');
 
 // Creating user from form:
-Route::post('/admin/registerUser', [UserController::class, 'storeUser'])->name('registerAccount.send');
+Route::post('/admin/registerUser', [UserController::class, 'store'])->name('registerAccount.send');
+
+// Accounts page:
+Route::get('/admin/accounts', [UserController::class, 'index'])->name('admin.acounts');
+
+// Profile admin page:
+Route::get('/admin/profile/{id}', [UserController::class, 'profile'])->name('admin.profile');
+
+// Update profile page:
+Route::post('/admin/registerAccount/{id}', [UserController::class, 'update'])->name('registerAccount.update');
 
 require __DIR__.'/auth.php';

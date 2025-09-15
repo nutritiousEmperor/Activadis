@@ -5,12 +5,12 @@
         </h2>
 
         <p class="mt-1 text-sm text-gray-600">
-            {{ __("Maak een account aan voor een medewerker. Die krijgt vervolgens een e-mail om een wachtwoord aan te maken.") }}
+            {{ __("Update de accounts gegevens van een medewerker") }}
         </p>
     </header>
 
 
-    <form method="post" action="{{ route('registerAccount.send') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('registerAccount.update', $user->id) }}" class="mt-6 space-y-6">
         @csrf
 
 
@@ -51,7 +51,7 @@
 
 
         <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Maak account') }}</x-primary-button>
+            <x-primary-button>{{ __('Save') }}</x-primary-button>
 
             @if (session('status') === 'profile-updated')
                 <p
@@ -60,7 +60,7 @@
                     x-transition
                     x-init="setTimeout(() => show = false, 2000)"
                     class="text-sm text-gray-600"
-                >{{ __('Account aangemaakt.') }}</p>
+                >{{ __('Updates opgeslagen!.') }}</p>
             @endif
         </div>
     </form>
