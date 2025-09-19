@@ -5,21 +5,20 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\ActiviteitenController;
 
-// Publieke homepage: activiteitenlijst
-Route::get('/', [ActiviteitenController::class, 'index'])->name('activiteiten.index');
+Route::get('/', [ActiviteitenController::class, 'index'])
+    ->name('activiteiten.index');
 
-// Gast-inschrijving (popup)
 Route::post('/activiteiten/inschrijven/guest', [ActiviteitenController::class, 'guestSignup'])
+    ->middleware('throttle:10,1')
     ->name('activiteiten.guest');
 
-// Ingelogde inschrijving (geen popup)
 Route::post('/activiteiten/inschrijven', [ActiviteitenController::class, 'authSignup'])
-    ->middleware('auth')
+    ->middleware(['auth'])
     ->name('activiteiten.auth');
 
-// Overige routes
 Route::get('/dashboard', fn () => view('dashboard'))
-    ->middleware(['auth','verified'])->name('dashboard');
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -27,6 +26,8 @@ Route::middleware('auth')->group(function () {
     Route::middleware('role:user')->delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+Route::middleware(['auth', 'role:admin'])->group(function () {
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
+});
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

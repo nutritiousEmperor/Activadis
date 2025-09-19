@@ -5,47 +5,20 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Models\Activiteit;
 
 class ActiviteitenController extends Controller
 {
     public function index()
     {
-        // Dummy data (in de toekomst uit database)
-        $activiteiten = [
-            [
-                'id' => 1,
-                'activiteitnaam' => 'Workshop Laravel',
-                'locatie' => 'Utrecht',
-                'inclusief_eten' => true,
-                'omschrijving' => 'Leer de basis van Laravel.',
-                'begin_tijd' => '10:00',
-                'eind_tijd' => '16:00',
-                'kosten' => 50.00,
-                'toegang' => 'iedereen',
-            ],
-            [
-                'id' => 2,
-                'activiteitnaam' => 'Teambuilding',
-                'locatie' => 'Amsterdam',
-                'inclusief_eten' => false,
-                'omschrijving' => 'Samen plezier maken en sterker worden als team.',
-                'begin_tijd' => '13:00',
-                'eind_tijd' => '17:00',
-                'kosten' => 0.00,
-                'toegang' => 'covadis',
-            ],
-        ];
+        // Haal activiteiten uit de database (tabel: activiteiten)
+        $activiteiten = Activiteit::orderBy('datum')->orderBy('tijd')->get();
 
         $isLoggedIn = Auth::check();
 
-        // Filter: gast ziet alleen "iedereen", ingelogd ziet alles
-        $zichtbare = $isLoggedIn
-            ? $activiteiten
-            : array_values(array_filter($activiteiten, fn($a) => ($a['toegang'] ?? 'iedereen') === 'iedereen'));
-
         return view('activiteiten', [
             'isLoggedIn'   => $isLoggedIn,
-            'activiteiten' => $zichtbare,
+            'activiteiten' => $activiteiten,
         ]);
     }
 
@@ -75,7 +48,4 @@ class ActiviteitenController extends Controller
 
         return back()->with('success', 'Je bent ingeschreven!');
     }
-
-    
-    
 }
