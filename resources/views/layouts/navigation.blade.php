@@ -68,6 +68,7 @@
                             </x-dropdown-link>
                          <?php } ?>
 
+
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
