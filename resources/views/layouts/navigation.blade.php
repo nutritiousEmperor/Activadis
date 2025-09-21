@@ -57,10 +57,6 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
-                        <x-dropdown-link :href="route('admin.index')">
-                            {{ __('Admin') }}
-                        </x-dropdown-link>
-
                         <!-- admin page -->
                          <?php if (auth()->user()->isAdmin()) { ?>
                             <x-dropdown-link :href="route('admin.dashboard')">
@@ -115,7 +111,7 @@
                     {{ __('Profile') }}
                 </x-responsive-nav-link>
 
-                <x-responsive-nav-link :href="route('admin.index')">
+                <x-responsive-nav-link :href="route('admin.dashboard')">
                     {{ __('Admin') }}
                 </x-responsive-nav-link>
 
