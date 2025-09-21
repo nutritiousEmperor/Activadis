@@ -16,8 +16,7 @@
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-secondary">
-            @include('layouts.navigation')
-
+            @include('layouts.admin-navigation')
             <!-- Page Heading -->
             @isset($header)
                 <header class="bg-secondary shadow">

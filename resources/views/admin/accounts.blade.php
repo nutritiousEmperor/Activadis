@@ -1,60 +1,63 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+        <h2 class="font-semibold text-xl leading-tight">
             {{ __('Account management') }}
         </h2>
     </x-slot>
 
+
+    
+
     <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
-                <div class="max-w-xl">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+                
+                <div class="p-6 text-gray-900">
+                    <div
+                        class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
+                        <a href="{{ route('admin.registerUser') }}"
+                            class="inline-flex items-center  bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                            + Nieuwe Medewerker
+                        </a>
+                    </div>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full text-sm">
+                                <thead>
+                                <tr class="text-left text-gray-500">
+                                    <th>Naam</th>
+                                    <th>Email</th>
+                                    <th>functie</th>
+                                    <th>Role</th>
+                                    <th>Acties</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                @foreach ($users as $user)
 
-                <div class="flex justify-center btn1">
-                    <a href="{{ route('admin.registerUser') }}">
-                        <x-primary-button>{{ __('Registreer account') }}</x-primary-button>
-                    </a>
+                                    <tr class="border-t">
+                                    <td class="font-medium">{{ $user->name }}</td>
+                                    <td>
+                                        <div class="text-gray-500">{{ $user->email }}</div>
+                                    </td>
+                                    <td>
+                                        <div class="text-gray-500">{{ $user->functie ?? '-' }}</div>
+                                    </td>
+                                    <td>{{ ucfirst($user->role) }}</td>
+                                    <td>
+                                        <div class="flex items-center gap-2">
+                                            <a href="/admin/profile/{{ $user->id }}"class="text-blue-600 hover:underline">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye w-4 h-4" data-lov-id="src/components/admin/ReservationManagement.tsx:234:24" data-lov-name="Eye" data-component-path="src/components/admin/ReservationManagement.tsx" data-component-line="234" data-component-file="ReservationManagement.tsx" data-component-name="Eye" data-component-content="%7B%22className%22%3A%22w-4%20h-4%22%7D"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                            </a>
+                                        </div>
+                                    </td>
+                                    </tr>
+                                @endforeach
+                                </tbody>
+                            </table>
+                         </div>
                 </div>
-
-                    <table>
-                    <thead>
-                        <tr>
-                            <th>Naam</th>
-                            <th>Email</th>
-                            <th>Functie</th>
-                            <th>Rol</th>
-                            <th>Profiel</th>
-                        </tr>
-                    </thead>
-                        @foreach ($users as $user)
-                            <tr>
-                                <td class="border px-4 py-2">{{ $user->name }}</td>
-                                <td class="border px-4 py-2">{{ $user->email }}</td>
-                                <td class="border px-4 py-2">{{ $user->functie ?? '-' }}</td>
-                                <td class="border px-4 py-2">{{ ucfirst($user->role) }}</td>
-                                <td class="border px-4 py-2"><a href="/admin/profile/{{ $user->id }}" class="text-indigo-600 hover:text-indigo-900">Profiel</a></td>
-                            </tr>
-                        @endforeach
-                    </table>
-                </div>
-            </div>     
+            </div>
+        </div>
+    </div>
             
-</x-app-layout>
-
-<style>
-    table {
-            border-collapse: collapse;
-            width: 100%;
-        }
-
-        th,
-        td {
-            border: 1px solid #7a3f3f;
-            padding: 10px;
-            text-align: center;
-        }
-
-        .btn1 {
-            padding-bottom: 20px;
-        }
-</style>
+</x-admin-layout>

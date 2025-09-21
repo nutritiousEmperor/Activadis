@@ -13,17 +13,17 @@
 
                 <!-- Navigation Links -->
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-white">
+                    <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')" class="text-white">
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-white">
+                    <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.dashboard')" class="text-white">
                         {{ __('Activiteiten') }}
                     </x-nav-link>
                 </div>
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-white">
+                    <x-nav-link :href="route('admin.acounts')" :active="request()->routeIs('admin.acounts', 'admin.registerUser')" class="text-white">
                         {{ __('Medewerkers') }}
                     </x-nav-link>
                 </div>
@@ -55,12 +55,12 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
-                        <!-- admin page -->
-                         <?php if (auth()->user()->isAdmin()) { ?>
-                            <x-dropdown-link :href="route('admin.dashboard')">
-                                {{ __('Admin') }}
+                        <!-- dashboard page -->
+                         @if(auth()->user()->isAdmin())
+                            <x-dropdown-link :href="route('dashboard')">
+                                {{ __('Dashboard') }}
                             </x-dropdown-link>
-                         <?php } ?>
+                        @endif
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
