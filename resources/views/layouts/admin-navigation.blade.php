@@ -1,12 +1,13 @@
 <nav x-data="{ open: false }" class="bg-primary border-b border-gray-100">
     <!-- Primary Navigation Menu -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 ">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
             <div class="flex">
                 <!-- Logo -->
                 <div class="shrink-0 flex items-center">
                     <a href="{{ route('dashboard') }}">
                         <img src="{{ asset('src/covadis_logo.svg') }}" alt="Covadis Logo" class="h-9 w-auto">
+
                     </a>
                 </div>
 
@@ -16,19 +17,16 @@
                         {{ __('Dashboard') }}
                     </x-nav-link>
                 </div>
-
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('activiteiten')" class="text-white">
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-white">
                         {{ __('Activiteiten') }}
                     </x-nav-link>
                 </div>
-
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('aanmeldingen')" class="text-white">
-                        {{ __('Aanmeldingen') }}
+                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-white">
+                        {{ __('Medewerkers') }}
                     </x-nav-link>
                 </div>
-
             </div>
 
             <!-- Settings Dropdown -->
@@ -39,7 +37,7 @@
                         <img 
                             src="{{ file_exists(public_path('profile_photos/pf-' . auth()->user()->id . '.jpg')) ? asset('profile_photos/pf-' . auth()->user()->id . '.jpg') : asset('profile_photos/default.jpg') }}" 
                             alt="Profielfoto" 
-                            class="h-8 w-8 rounded-full me-2 object-cover bg-white"
+                            class="h-8 w-8 rounded-full me-2 object-cover"
                         >    
                         
                         <div class="text-white">{{ Auth::user()->name }}</div>
@@ -57,17 +55,12 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
-                        <x-dropdown-link :href="route('admin.index')">
-                            {{ __('Admin') }}
-                        </x-dropdown-link>
-
                         <!-- admin page -->
                          <?php if (auth()->user()->isAdmin()) { ?>
                             <x-dropdown-link :href="route('admin.dashboard')">
                                 {{ __('Admin') }}
                             </x-dropdown-link>
                          <?php } ?>
-
 
                         <!-- Authentication -->
                         <form method="POST" action="{{ route('logout') }}">
@@ -113,10 +106,6 @@
             <div class="mt-3 space-y-1">
                 <x-responsive-nav-link :href="route('profile.edit')">
                     {{ __('Profile') }}
-                </x-responsive-nav-link>
-
-                <x-responsive-nav-link :href="route('admin.index')">
-                    {{ __('Admin') }}
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
