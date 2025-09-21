@@ -11,6 +11,33 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
+    public function updatePhoto(Request $request)
+    {
+        $request->validate([
+            'profile_photo' => 'required|image|max:2048',
+        ]);
+
+        $directory = public_path('profile_photos');
+
+        if (!file_exists($directory)) {
+            mkdir($directory, 0755, true);
+        }
+
+        $user = Auth::user();
+        $extension = $request->file('profile_photo')->getClientOriginalExtension();
+        $filename = 'pf-' . $user->id . '.jpg';
+
+        $oldPath = $directory . DIRECTORY_SEPARATOR . $filename;
+        if (file_exists($oldPath)) {
+            unlink($oldPath);
+        }
+
+        $request->file('profile_photo')->move($directory, $filename);
+
+        return redirect()->back()->with('status', 'Profile photo updated successfully!');
+    }
+
+
     /**
      * Display the user's profile form.
      */
