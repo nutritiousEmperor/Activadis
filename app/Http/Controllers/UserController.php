@@ -18,7 +18,7 @@ class UserController extends Controller
         if($user->role == 'admin')
         {
             $users = User::all();
-            return view('admin.accounts', compact('users'));
+            return view('admin.medewerkers.accounts', compact('users'));
         } else {
             abort(403, 'Unauthorized.');
         }
@@ -30,7 +30,7 @@ class UserController extends Controller
         if($user->role == 'admin')
         {
             
-            return view('admin.registerUser', compact('user'));
+            return view('admin.medewerkers.registerUser', compact('user'));
         } else {
             abort(403, 'Unauthorized.');
         }
@@ -77,7 +77,7 @@ class UserController extends Controller
     public function profile($id)
     {
         $user = User::findOrFail($id);
-        return view('admin.profile', compact('user'));
+        return view('admin.medewerkers.profile', compact('user'));
     }
 
     

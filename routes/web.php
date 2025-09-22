@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ActiviteitenController;
+use App\Http\Controllers\AdminActiviteitenController;
 
 
 Route::get('/', [ActiviteitenController::class, 'index'])
@@ -42,6 +43,11 @@ Route::middleware('auth')->group(function () {
     Route::post('/activiteiten/inschrijven', [ActiviteitenController::class, 'authSignup'])
         ->middleware(['auth'])
         ->name('activiteiten.auth');
+
+
+    Route::resource('/admin/activiteiten', AdminActiviteitenController::class)->names('admin.activiteiten');
+
+        
 });
 
 // Admin dashboard:

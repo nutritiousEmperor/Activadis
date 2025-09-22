@@ -31,11 +31,6 @@ class AdminController extends Controller
             'totalAdmins' => $totalAdmins,
         ]);
     }
-     public function createActiviteit()
-    {
-        
-        return view('admin.createActiviteit');
-    }
 
     public function dashboard()
     {
@@ -57,30 +52,4 @@ class AdminController extends Controller
     /**
      * Overzichtspagina met alle activiteiten.
      */
-    public function activiteiten()
-    {
-        $activities = Activity::latest()->get();
-
-        return view('admin.overzicht', compact('activities'));
-    }
-
-    /**
-     * Activiteit opslaan.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'title'            => 'required|string|max:255',
-            'description'      => 'nullable|string',
-            'date'             => 'required|date',
-            'time'             => 'required',
-            'location'         => 'required|string|max:255',
-            'max_participants' => 'nullable|integer|min:1',
-        ]);
-
-        Activity::create($validated);
-
-        return redirect()->route('admin.activities.create')
-                         ->with('success', 'Activiteit succesvol aangemaakt!');
-    }
 }
