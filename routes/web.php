@@ -4,6 +4,15 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ActiviteitenController;
+
+
+Route::get('/', [ActiviteitenController::class, 'index'])
+    ->name('activiteiten.index');
+
+Route::post('/activiteiten/inschrijven/guest', [ActiviteitenController::class, 'guestSignup'])
+    ->middleware('throttle:10,1')
+    ->name('activiteiten.guest');
 
 
 
@@ -16,9 +25,6 @@ use App\Http\Controllers\UserController;
     Route::post('/admin/activities', [AdminController::class, 'store'])->name('admin.activities.store');
   });
 
-Route::get('/', function () {
-    return view('welcome');
-});
 
 Route::get('/dashboard', function () {
     return view('dashboard');
@@ -31,6 +37,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
 
     Route::middleware('role:user')->delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    
+    Route::post('/activiteiten/inschrijven', [ActiviteitenController::class, 'authSignup'])
+        ->middleware(['auth'])
+        ->name('activiteiten.auth');
 });
 
 // Admin dashboard:

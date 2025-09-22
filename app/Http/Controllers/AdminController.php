@@ -80,7 +80,7 @@ class AdminController extends Controller
 
         Activity::create($validated);
 
-        return redirect()->route('admin.index')
+        return redirect()->route('admin.activities.create')
                          ->with('success', 'Activiteit succesvol aangemaakt!');
     }
 }
