@@ -56,7 +56,7 @@ class UserController extends Controller
         $role = $request->input('role');
 
         // Maak migration aan met boolean met if password is changed.
-        $wachtwoord = "CovadisLover123#";
+        $wachtwoord = "Covadis123#";
 
         $request->validate([
             'name' => 'required|string|max:255',
