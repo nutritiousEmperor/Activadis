@@ -18,6 +18,7 @@ export default {
                 primary: '#0b0c2f',
                 secondary: '#0f1f3b',
                 main: '#fba21a',
+                maindark: '#f79704',
                 taps: '#eaf4f7',
             },
         },

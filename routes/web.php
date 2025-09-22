@@ -6,6 +6,7 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ActiviteitenController;
 use App\Http\Controllers\AdminActiviteitenController;
+use App\Http\Controllers\FunctionController;
 
 
 Route::get('/', [ActiviteitenController::class, 'index'])
@@ -46,6 +47,7 @@ Route::middleware('auth')->group(function () {
 
 
     Route::resource('/admin/activiteiten', AdminActiviteitenController::class)->names('admin.activiteiten');
+    Route::resource('/admin/functies', FunctionController::class)->names('admin.medewerkers.functies');
 
         
 });

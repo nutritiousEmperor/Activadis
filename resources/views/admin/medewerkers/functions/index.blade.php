@@ -14,39 +14,31 @@
                 
                 <div class="p-6 text-gray-900">
                     <div
-                        class="flex flex-col sm:flex-row gap-4 items-start  mb-6">
-                        <a href="{{ route('admin.registerUser') }}"
+                        class="flex flex-col sm:flex-row gap-4 items-start mb-6">
+                        <a href="{{ route('admin.acounts') }}"
                             class="inline-flex items-center  bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                            + Nieuwe Medewerker
+                            ↩ terug
                         </a>
-                        <a href="{{ route('admin.medewerkers.functies.index') }}"
-                            class="inline-flex items-center  bg-main text-white px-4 py-2 rounded hover:bg-maindark">
-                           Functies
+                        <a href="{{ route('admin.medewerkers.functies.create') }}"
+                            class="inline-flex items-center  bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                            + Nieuwe functie
                         </a>
                     </div>
                         <div class="overflow-x-auto">
                             <table class="min-w-full text-sm">
                                 <thead>
                                 <tr class="text-left text-gray-500">
-                                    <th>Naam</th>
-                                    <th>Email</th>
-                                    <th>functie</th>
-                                    <th>Role</th>
+                                    <th>Functie</th>
+                                    <th>Aantal</th>
                                     <th>Acties</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                @foreach ($users as $user)
+                                @foreach ($functions as $function)
 
                                     <tr class="border-t">
-                                    <td class="font-medium">{{ $user->name }}</td>
-                                    <td>
-                                        <div class="text-gray-500">{{ $user->email }}</div>
-                                    </td>
-                                    <td>
-                                        <div class="text-gray-500">{{ $user->functie ?? '-' }}</div>
-                                    </td>
-                                    <td>{{ ucfirst($user->role) }}</td>
+                                    <td class="font-medium">{{ $functions->naam }}</td>
+                                    <td class="font-medium">0</td>
                                     <td>
                                         <div class="flex items-center gap-2">
                                             <a href="/admin/profile/{{ $user->id }}"class="text-blue-600 hover:underline">
