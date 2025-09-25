@@ -10,24 +10,25 @@
                     </a>
                 </div>
 
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-white">
-                        {{ __('Dashboard') }}
-                    </x-nav-link>
-                </div>
 
                 <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('activiteiten')" class="text-white">
+                    <x-nav-link :href="route('activiteiten.index')" :active="request()->routeIs('activiteiten.index')" class="text-white">
                         {{ __('Activiteiten') }}
                     </x-nav-link>
                 </div>
 
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    <x-nav-link :href="route('dashboard')" :active="request()->routeIs('aanmeldingen')" class="text-white">
-                        {{ __('Aanmeldingen') }}
-                    </x-nav-link>
-                </div>
+                <?php if (auth()->user()->isAdmin()) { ?>
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('admin.activiteiten.index')" :active="request()->routeIs('admin.activiteiten')" class="text-white">
+                            {{ __('Activiteiten beheer') }}
+                        </x-nav-link>
+                    </div>
+                    <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                        <x-nav-link :href="route('admin.acounts')" :active="request()->routeIs('admin.acounts', 'admin.registerUser')" class="text-white">
+                            {{ __('Medewerkers') }}
+                        </x-nav-link>
+                    </div>
+                <?php } ?>
 
             </div>
 
@@ -57,12 +58,6 @@
                             {{ __('Profile') }}
                         </x-dropdown-link>
 
-                        <!-- admin page -->
-                         <?php if (auth()->user()->isAdmin()) { ?>
-                            <x-dropdown-link :href="route('admin.dashboard')">
-                                {{ __('Admin') }}
-                            </x-dropdown-link>
-                         <?php } ?>
 
 
                         <!-- Authentication -->
