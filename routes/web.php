@@ -68,4 +68,7 @@ Route::get('/admin/profile/{id}', [UserController::class, 'profile'])->name('adm
 // Update profile page:
 Route::post('/admin/registerAccount/{id}', [UserController::class, 'update'])->name('registerAccount.update');
 
+// Delete user:
+Route::delete('/admin/users/{id}', [UserController::class, 'destroy'])->name('admin.deleteUser');
+
 require __DIR__.'/auth.php';
