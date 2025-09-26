@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
@@ -12,7 +11,7 @@ return new class extends Migration {
 
     public function down(): void
     {
-        // Je kunt hem opnieuw maken als je ooit terug moet
+        // alleen voor rollback; hoeft niet gebruikt te worden
         Schema::create('activiteiten', function ($table) {
             $table->id();
             $table->string('titel');
