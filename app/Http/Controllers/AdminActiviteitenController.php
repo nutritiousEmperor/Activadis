@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Activity;
-use Illuminate\Support\Facades\Auth;
 
 class AdminActiviteitenController extends Controller
 {
@@ -14,7 +13,6 @@ class AdminActiviteitenController extends Controller
     public function index()
     {
         $activities = Activity::latest()->get();
-
         return view('admin.activiteiten.overzicht', compact('activities'));
     }
 
@@ -42,15 +40,8 @@ class AdminActiviteitenController extends Controller
 
         Activity::create($validated);
 
-        return redirect()->route('admin.activiteiten.create')->with('success', 'Activiteit succesvol aangemaakt!');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        return redirect()->route('admin.activiteiten.overzicht')
+            ->with('success', 'Activiteit succesvol aangemaakt!');
     }
 
     /**
@@ -58,7 +49,8 @@ class AdminActiviteitenController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $activity = Activity::findOrFail($id);
+        return view('admin.activiteiten.editActiviteit', compact('activity'));
     }
 
     /**
@@ -66,7 +58,20 @@ class AdminActiviteitenController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate([
+            'title'            => 'required|string|max:255',
+            'description'      => 'nullable|string',
+            'date'             => 'required|date',
+            'time'             => 'required',
+            'location'         => 'required|string|max:255',
+            'max_participants' => 'nullable|integer|min:1',
+        ]);
+
+        $activity = Activity::findOrFail($id);
+        $activity->update($validated);
+
+        return redirect()->route('admin.activiteiten.overzicht')
+            ->with('success', 'Activiteit succesvol bijgewerkt!');
     }
 
     /**
@@ -74,6 +79,10 @@ class AdminActiviteitenController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $activity = Activity::findOrFail($id);
+        $activity->delete();
+
+        return redirect()->route('admin.activiteiten.overzicht')
+            ->with('success', 'Activiteit succesvol verwijderd!');
     }
 }

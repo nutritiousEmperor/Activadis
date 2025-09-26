@@ -47,7 +47,9 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('/admin/activiteiten', AdminActiviteitenController::class)->names('admin.activiteiten');
 
-        
+        Route::get('/admin/activiteiten', [AdminActiviteitenController::class, 'index'])
+    ->name('admin.activiteiten.overzicht');
+
 });
 
 // Admin dashboard:
