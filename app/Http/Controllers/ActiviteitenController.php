@@ -6,21 +6,22 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Activiteit;
+use App\Models\Activity;
 
 class ActiviteitenController extends Controller
 {
     public function index()
-    {
-        // Haal activiteiten uit de database (tabel: activiteiten)
-        $activiteiten = Activiteit::orderBy('datum')->orderBy('tijd')->get();
+{
+    // Haal activiteiten uit de database (tabel: activities)
+    $activiteiten = Activity::orderBy('date')->orderBy('time')->get();
 
-        $isLoggedIn = Auth::check();
+    $isLoggedIn = Auth::check();
 
-        return view('activiteiten', [
-            'isLoggedIn'   => $isLoggedIn,
-            'activiteiten' => $activiteiten,
-        ]);
-    }
+    return view('activiteiten', [
+        'isLoggedIn'   => $isLoggedIn,
+        'activiteiten' => $activiteiten,
+    ]);
+}
 
     public function guestSignup(Request $request)
     {

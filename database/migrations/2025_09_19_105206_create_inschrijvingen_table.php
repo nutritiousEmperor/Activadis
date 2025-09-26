@@ -9,13 +9,14 @@ return new class extends Migration {
     {
         Schema::create('inschrijvingen', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('activiteit_id')->constrained('activiteiten')->cascadeOnDelete();
+           $table->foreignId('activity_id')->constrained('activities')->cascadeOnDelete();
+
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->string('guest_email')->nullable();
             $table->timestamps();
 
-            $table->unique(['activiteit_id','user_id']);        
-            $table->unique(['activiteit_id','guest_email']);   
+            $table->unique(['activity_id','user_id']);
+            $table->unique(['activity_id','guest_email']);
         });
     }
 

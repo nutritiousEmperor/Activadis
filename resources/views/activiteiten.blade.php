@@ -43,21 +43,22 @@
 
     @forelse($activiteiten as $a)
         @php
-            // Verwachte kolommen: titel, omschrijving, datum (date), tijd (time), locatie, max_deelnemers
-            $datum = $a->datum ? Carbon::parse($a->datum)->format('d-m-Y') : '-';
-            $tijd  = $a->tijd ? Carbon::parse($a->tijd)->format('H:i') : '-';
+            // TABELKOLONEN (EN): title, description, date, time, location, max_participants
+            $datum = $a->date ? Carbon::parse($a->date)->format('d-m-Y') : '-';
+            // time staat als HH:MM:SS; format naar HH:MM
+            $tijd  = $a->time ? Carbon::parse($a->time)->format('H:i') : '-';
         @endphp
 
         <div style="border:1px solid #e5e7eb; padding:16px; margin:12px 0; border-radius:8px;">
             <h2 style="font-size:18px; font-weight:600; margin:0 0 6px;">
-                {{ $a->titel }}
-                @if($a->locatie)
-                    <small style="font-weight:400; color:#6b7280;">— {{ $a->locatie }}</small>
+                {{ $a->title }}
+                @if($a->location)
+                    <small style="font-weight:400; color:#6b7280;">— {{ $a->location }}</small>
                 @endif
             </h2>
 
-            @if($a->omschrijving)
-                <p><strong>Omschrijving:</strong> {{ $a->omschrijving }}</p>
+            @if($a->description)
+                <p><strong>Omschrijving:</strong> {{ $a->description }}</p>
             @endif
 
             <p>
@@ -66,12 +67,12 @@
                 <strong>Tijd:</strong> {{ $tijd }}
             </p>
 
-            @if(!is_null($a->max_deelnemers))
-                <p><strong>Max. deelnemers:</strong> {{ $a->max_deelnemers }}</p>
+            @if(!is_null($a->max_participants))
+                <p><strong>Max. deelnemers:</strong> {{ $a->max_participants }}</p>
             @endif
 
             @auth
-                {{-- Ingelogd: direct inschrijven --}}
+                {{-- Ingelogd: direct inschrijven (geen e-mail nodig) --}}
                 <form method="POST" action="{{ route('activiteiten.auth') }}">
                     @csrf
                     <input type="hidden" name="activity_id" value="{{ $a->id }}">
@@ -81,7 +82,7 @@
                     </button>
                 </form>
             @else
-                {{-- Gast: popup --}}
+                {{-- Gast: open popup om e-mail in te vullen --}}
                 <button class="inschrijf-btn" data-activity="{{ $a->id }}"
                     style="margin-top:8px; padding:8px 12px; border-radius:8px; background:#2563eb; color:white; border:none; cursor:pointer;">
                     Inschrijven
