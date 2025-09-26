@@ -1,79 +1,88 @@
-<?php
+<?php 
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers; 
 
-use Illuminate\Http\Request;
-use App\Models\Activity;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Http\Request; 
+use App\Models\Activity; 
 
-class AdminActiviteitenController extends Controller
-{
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $activities = Activity::latest()->get();
+class AdminActiviteitenController extends Controller 
+{ 
+    /** 
+     * Display a listing of the resource. 
+     */ 
+    public function index() 
+    { 
+        $activities = Activity::latest()->get(); 
+        return view('admin.activiteiten.overzicht', compact('activities')); 
+    } 
 
-        return view('admin.activiteiten.overzicht', compact('activities'));
-    }
+    /** 
+     * Show the form for creating a new resource. 
+     */ 
+    public function create() 
+    { 
+        return view('admin.activiteiten.createActiviteit'); 
+    } 
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('admin.activiteiten.createActiviteit');
-    }
+    /** 
+     * Store a newly created resource in storage. 
+     */ 
+    public function store(Request $request) 
+    { 
+        $validated = $request->validate([ 
+            'title'            => 'required|string|max:255', 
+            'description'      => 'nullable|string', 
+            'date'             => 'required|date', 
+            'time'             => 'required', 
+            'location'         => 'required|string|max:255', 
+            'max_participants' => 'nullable|integer|min:1', 
+        ]); 
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'title'            => 'required|string|max:255',
-            'description'      => 'nullable|string',
-            'date'             => 'required|date',
-            'time'             => 'required',
-            'location'         => 'required|string|max:255',
-            'max_participants' => 'nullable|integer|min:1',
-        ]);
+        Activity::create($validated); 
 
-        Activity::create($validated);
+        return redirect()->route('admin.activiteiten.index') 
+            ->with('success', 'Activiteit succesvol aangemaakt!'); 
+    } 
 
-        return redirect()->route('admin.activiteiten.create')->with('success', 'Activiteit succesvol aangemaakt!');
-    }
+    /** 
+     * Show the form for editing the specified resource. 
+     */ 
+    public function edit(string $id) 
+    { 
+        $activity = Activity::findOrFail($id); 
+        return view('admin.activiteiten.editActiviteit', compact('activity')); 
+    } 
 
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
-    }
+    /** 
+     * Update the specified resource in storage. 
+     */ 
+    public function update(Request $request, string $id) 
+    { 
+        $validated = $request->validate([ 
+            'title'            => 'required|string|max:255', 
+            'description'      => 'nullable|string', 
+            'date'             => 'required|date', 
+            'time'             => 'required', 
+            'location'         => 'required|string|max:255', 
+            'max_participants' => 'nullable|integer|min:1', 
+        ]); 
 
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        //
-    }
+        $activity = Activity::findOrFail($id); 
+        $activity->update($validated); 
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
+        return redirect()->route('admin.activiteiten.index') 
+            ->with('success', 'Activiteit succesvol bijgewerkt!'); 
+    } 
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
-}
+    /** 
+     * Remove the specified resource from storage. 
+     */ 
+    public function destroy(string $id) 
+    { 
+        $activity = Activity::findOrFail($id); 
+        $activity->delete(); 
+
+        return redirect()->route('admin.activiteiten.index') 
+            ->with('success', 'Activiteit succesvol verwijderd!'); 
+    } 
+} 
