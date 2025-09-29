@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl leading-tight">
-            {{ __('Account management') }}
+            {{ __('Account beheer') }}
         </h2>
     </x-slot>
 
@@ -37,11 +37,11 @@
                                 @foreach ($functions as $function)
 
                                     <tr class="border-t">
-                                    <td class="font-medium">{{ $functions->naam }}</td>
+                                    <td class="font-medium">{{ $function->naam }}</td>
                                     <td class="font-medium">0</td>
                                     <td>
                                         <div class="flex items-center gap-2">
-                                            <a href="/admin/profile/{{ $user->id }}"class="text-blue-600 hover:underline">
+                                            <a href="/admin/profile/{{ auth()->user()->id }}"class="text-blue-600 hover:underline">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye w-4 h-4" data-lov-id="src/components/admin/ReservationManagement.tsx:234:24" data-lov-name="Eye" data-component-path="src/components/admin/ReservationManagement.tsx" data-component-line="234" data-component-file="ReservationManagement.tsx" data-component-name="Eye" data-component-content="%7B%22className%22%3A%22w-4%20h-4%22%7D"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
                                             </a>
                                         </div>

@@ -3,7 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Functions;
+use App\Models\Functie;
+
 
 class FunctionController extends Controller
 {
@@ -12,8 +13,7 @@ class FunctionController extends Controller
      */
     public function index()
     {
-        $functions = Functions::get();
-
+        $functions = Functie::all(); // let op: gebruik Functie i.p.v. Functions
         return view('admin.medewerkers.functions.index', compact('functions'));
     }
     /**
@@ -21,7 +21,7 @@ class FunctionController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.medewerkers.functions.create');
     }
 
     /**
@@ -29,7 +29,16 @@ class FunctionController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'naam' => 'required|string|max:255',
+        ]);
+
+        Functions::create([
+            'naam' => $request->naam,
+        ]);
+
+        return redirect()->route('admin.medewerkers.functies.create')
+                        ->with('status', 'functie-created');
     }
 
     /**

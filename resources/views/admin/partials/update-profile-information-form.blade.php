@@ -35,6 +35,37 @@
         </div>
 
         <div>
+            <x-input-label for="permissions" :value="__('Functie')" />
+
+            <div x-data="{ open: false, selected: [] }" class="relative w-full">
+                <button type="button" @click="open = !open"
+                    class="w-full flex justify-between items-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none">
+                    <span x-text="selected.length > 0 ? selected.join(', ') : 'Kies opties'"></span>
+                    <svg class="w-4 h-4 ml-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+
+                <div x-show="open" @click.outside="open = false"
+                    class="absolute mt-1 w-full rounded-lg bg-white shadow-lg border border-gray-200 z-10">
+                    <ul class="max-h-60 overflow-y-auto p-2 text-sm">
+                        <template x-for="option in ['Optie 1', 'Optie 2', 'Optie 3', 'Optie 4']" :key="option">
+                            <li>
+                                <label class="flex items-center space-x-2 p-2 hover:bg-gray-100 rounded cursor-pointer">
+                                    <input type="checkbox" :value="option" x-model="selected"
+                                        class="rounded border-gray-300 text-indigo-600 focus:ring-indigo-500">
+                                    <span x-text="option"></span>
+                                </label>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div>
             <x-input-label for="role" :value="__('Rol voor account')" />
 
             <input type="radio" name="role" id="rol-user" value="user"
@@ -51,7 +82,7 @@
 
 
         <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+            <x-primary-button>{{ __('Opslaan') }}</x-primary-button>
 
             @if (session('status') === 'profile-updated')
                 <p
