@@ -36,6 +36,7 @@ class AdminActiviteitenController extends Controller
             'time'             => 'required', 
             'location'         => 'required|string|max:255', 
             'max_participants' => 'nullable|integer|min:1', 
+            'gasten'           => 'boolean',
         ]); 
 
         Activity::create($validated); 

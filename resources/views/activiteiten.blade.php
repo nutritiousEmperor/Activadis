@@ -1,11 +1,8 @@
-@php
-    use Carbon\Carbon;
-@endphp
+@php use Carbon\Carbon; @endphp
 
 {{-- Header --}}
 <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 24px; border-bottom:1px solid #e5e7eb; margin-bottom:24px;">
     <a href="{{ url('/') }}" style="font-weight:700; text-decoration:none; font-size:18px;">Activiteiten</a>
-
     <div>
         @auth
             <span style="margin-right:12px;">Ingelogd als {{ Auth::user()->email }}</span>
@@ -24,18 +21,34 @@
     </div>
 </div>
 
-{{-- Flash toasts (success/error/info) --}}
-@foreach (['success','error','info'] as $f)
-  @if(session($f))
-    <div style="max-width:960px;margin:0 auto;">
-      <div style="padding:10px;margin:10px 0;border-radius:10px;
-                  background: {{ $f==='success'?'#d1fae5':($f==='error'?'#fee2e2':'#e5e7eb') }};
-                  border:1px solid {{ $f==='success'?'#a7f3d0':($f==='error'?'#fecaca':'#d1d5db') }};">
-        {{ session($f) }}
-      </div>
-    </div>
-  @endif
-@endforeach
+{{-- Één centrale toast (success + errors) --}}
+@if (session('success') || $errors->any())
+  <div id="toast"
+       style="max-width:960px;margin:0 auto 12px; padding:10px;border-radius:10px;
+              background: {{ session('success') ? '#d1fae5' : '#fee2e2' }};
+              border:1px solid {{ session('success') ? '#a7f3d0' : '#fecaca' }};">
+      @if (session('success'))
+          {{ session('success') }}
+      @endif
+      @if ($errors->any())
+          <div style="margin-top:6px;">
+              <strong>Let op:</strong>
+              <ul style="margin:6px 0 0 18px;">
+                  @foreach ($errors->all() as $error)
+                      <li>{{ $error }}</li>
+                  @endforeach
+              </ul>
+          </div>
+      @endif
+  </div>
+  <script>
+    (function(){
+      const el = document.getElementById('toast');
+      if(!el) return;
+      setTimeout(()=>{ el.style.transition='opacity .4s'; el.style.opacity='0'; setTimeout(()=>el.remove(), 400); }, 3000);
+    })();
+  </script>
+@endif
 
 {{-- Lijst --}}
 <div style="max-width:960px; margin:0 auto; padding:24px;">
@@ -43,32 +56,43 @@
 
     @forelse($activiteiten as $a)
         @php
-            // TABELKOLONEN (EN): title, description, date, time, location, max_participants
             $datum = $a->date ? Carbon::parse($a->date)->format('d-m-Y') : '-';
-            // time staat als HH:MM:SS; format naar HH:MM
             $tijd  = $a->time ? Carbon::parse($a->time)->format('H:i') : '-';
         @endphp
 
         <div style="border:1px solid #e5e7eb; padding:16px; margin:12px 0; border-radius:8px;">
-            <h2 style="font-size:18px; font-weight:600; margin:0 0 6px;">
-                {{ $a->title }}
-                @if($a->location)
-                    <small style="font-weight:400; color:#6b7280;">— {{ $a->location }}</small>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+                <h2 style="font-size:18px; font-weight:600; margin:0;">
+                    {{ $a->title }}
+                    @if($a->location)
+                        <small style="font-weight:400; color:#6b7280;">— {{ $a->location }}</small>
+                    @endif
+                </h2>
+
+                {{-- Badge gasten/medewerkers --}}
+                @if(!empty($a->gasten))
+                    <span style="font-size:12px; padding:2px 8px; border-radius:9999px; background:#ecfdf5; color:#047857;">
+                        Gasten welkom
+                    </span>
+                @else
+                    <span style="font-size:12px; padding:2px 8px; border-radius:9999px; background:#f3f4f6; color:#374151;">
+                        Alleen medewerkers
+                    </span>
                 @endif
-            </h2>
+            </div>
 
             @if($a->description)
-                <p><strong>Omschrijving:</strong> {{ $a->description }}</p>
+                <p style="margin:8px 0 0;"><strong>Omschrijving:</strong> {{ $a->description }}</p>
             @endif
 
-            <p>
+            <p style="margin:8px 0 0;">
                 <strong>Datum:</strong> {{ $datum }}
                 &nbsp;•&nbsp;
                 <strong>Tijd:</strong> {{ $tijd }}
             </p>
 
             @if(!is_null($a->max_participants))
-                <p><strong>Max. deelnemers:</strong> {{ $a->max_participants }}</p>
+                <p style="margin:8px 0 0;"><strong>Max. deelnemers:</strong> {{ $a->max_participants }}</p>
             @endif
 
             @auth
@@ -82,11 +106,14 @@
                     </button>
                 </form>
             @else
-                {{-- Gast: open popup om e-mail in te vullen --}}
-                <button class="inschrijf-btn" data-activity="{{ $a->id }}"
-                    style="margin-top:8px; padding:8px 12px; border-radius:8px; background:#2563eb; color:white; border:none; cursor:pointer;">
-                    Inschrijven
-                </button>
+                {{-- Gast: toon knop alleen als gasten welkom zijn --}}
+                @if(!empty($a->gasten))
+                    <button class="inschrijf-btn"
+                            data-activity="{{ $a->id }}"
+                            style="margin-top:8px; padding:8px 12px; border-radius:8px; background:#2563eb; color:white; border:none; cursor:pointer;">
+                        Inschrijven
+                    </button>
+                @endif
             @endauth
         </div>
     @empty
@@ -103,12 +130,12 @@
         <h3 style="margin-top:0; font-size:18px; font-weight:700;">Inschrijven als gast</h3>
         <p style="margin:6px 0 14px;">Vul je e-mailadres in om je in te schrijven.</p>
 
-        <form method="POST" action="{{ route('activiteiten.guest') }}">
+        <form method="POST" action="{{ route('activiteiten.guest') }}" id="guestForm">
             @csrf
-            <input type="hidden" name="activity_id" id="activity_id" value="">
+            <input type="hidden" name="activity_id" id="activity_id" value="{{ old('activity_id') }}">
             <div style="margin-bottom:12px;">
                 <label for="email" style="display:block; margin-bottom:6px; font-weight:600;">E-mail</label>
-                <input id="email" name="email" type="email" required
+                <input id="email" name="email" type="email" value="{{ old('email') }}" required
                        style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:8px;">
             </div>
             <div style="display:flex; gap:8px; justify-content:flex-end;">
@@ -124,63 +151,38 @@
         </form>
     </div>
 
-    {{-- Validatie/flash melding (gast) --}}
-    @if (session('success') || $errors->any())
-        <div id="toast"
-             style="position:fixed; right:16px; top:16px; z-index:60; max-width: 380px;
-                    background:#10b981; color:white; padding:12px 14px; border-radius:10px; box-shadow:0 10px 25px rgba(0,0,0,.15);">
-            @if (session('success'))
-                {{ session('success') }}
-            @endif
-            @if ($errors->any())
-                <div style="margin-top:6px; font-size:14px; color:#fff;">
-                    <strong>Let op:</strong>
-                    <ul style="margin:6px 0 0 18px;">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-        </div>
-
-        <script>
-            (function () {
-                const el = document.getElementById('toast');
-                if (!el) return;
-                setTimeout(() => {
-                    el.style.transition = 'opacity .4s ease';
-                    el.style.opacity = '0';
-                    setTimeout(() => el.remove(), 400);
-                }, 3000);
-            })();
-        </script>
-    @endif
-
     <script>
-        (function () {
-            const backdrop = document.getElementById('modal-backdrop');
-            const modal = document.getElementById('modal');
-            const cancel = document.getElementById('modal-cancel');
-            const idInput = document.getElementById('activity_id');
+      (function () {
+        const backdrop  = document.getElementById('modal-backdrop');
+        const modal     = document.getElementById('modal');
+        const cancelBtn = document.getElementById('modal-cancel');
+        const idInput   = document.getElementById('activity_id');
+        const emailEl   = document.getElementById('email');
 
-            function openModal(activityId) {
-                idInput.value = activityId;
-                backdrop.style.display = 'block';
-                modal.style.display = 'block';
-            }
-            function closeModal() {
-                backdrop.style.display = 'none';
-                modal.style.display = 'none';
-                idInput.value = '';
-            }
+        function openModal(activityId) {
+          idInput.value = activityId || idInput.value;
+          backdrop.style.display = 'block';
+          modal.style.display = 'block';
+          setTimeout(()=> emailEl?.focus(), 0);
+        }
+        function closeModal() {
+          backdrop.style.display = 'none';
+          modal.style.display = 'none';
+        }
 
-            document.querySelectorAll('.inschrijf-btn').forEach(btn => {
-                btn.addEventListener('click', () => openModal(btn.dataset.activity));
-            });
+        // Open modal vanuit listing
+        document.querySelectorAll('.inschrijf-btn').forEach(btn => {
+          btn.addEventListener('click', () => openModal(btn.dataset.activity));
+        });
 
-            backdrop.addEventListener('click', closeModal);
-            cancel.addEventListener('click', closeModal);
-        })();
+        // Sluiten
+        backdrop.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+
+        // Als er validatie-errors waren, open modal opnieuw met oude waarden
+        @if ($errors->any())
+            openModal(document.getElementById('activity_id')?.value);
+        @endif
+      })();
     </script>
 @endguest
