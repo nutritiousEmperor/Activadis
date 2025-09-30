@@ -14,13 +14,15 @@ class createPassword extends Mailable
     use Queueable, SerializesModels;
 
     public $password1;
+    public $name;
 
     /**
      * Create a new message instance.
      */
-    public function __construct($password1)
+    public function __construct($password1, $name)
     {
         $this->password1 = $password1;
+        $this->name = $name;
     }
 
     /**
@@ -29,6 +31,7 @@ class createPassword extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
+            from: new \Illuminate\Mail\Mailables\Address('activadis@outlook.com', 'Activadis'),
             subject: 'Create Password',
         );
     }
@@ -39,7 +42,7 @@ class createPassword extends Mailable
     public function content(): Content
     {
         return new Content(
-            view: 'mail.createPassword',
+            markdown: 'mail.createPassword',
         );
     }
 
