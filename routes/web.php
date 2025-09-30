@@ -44,6 +44,10 @@ Route::middleware('auth')->group(function () {
         ->middleware(['auth'])
         ->name('activiteiten.auth');
 
+        Route::delete('/activiteiten/uitschrijven', [ActiviteitenController::class, 'unsubscribe'])
+            ->middleware(['auth'])
+            ->name('activiteiten.unsubscribe');
+
 
     Route::resource('/admin/activiteiten', AdminActiviteitenController::class)->names('admin.activiteiten');
 

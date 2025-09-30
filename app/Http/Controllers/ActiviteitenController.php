@@ -12,9 +12,8 @@ class ActiviteitenController extends Controller
 {
     public function index()
     {
-        // Publiek ziet alleen activiteiten waar gasten welkom zijn
-        $query = Activity::withCount('inschrijvingen') // <— telt aantal inschrijvingen
-                     ->orderBy('date')->orderBy('time');
+        $query = Activity::withCount('inschrijvingen')
+            ->orderBy('date')->orderBy('time');
 
         if (!Auth::check()) {
             $query->where('gasten', true);
@@ -23,9 +22,19 @@ class ActiviteitenController extends Controller
         $activiteiten = $query->get();
         $isLoggedIn   = Auth::check();
 
+
+        $userInschrijvingen = [];
+        if ($isLoggedIn) {
+            $userInschrijvingen = DB::table('inschrijvingen')
+                ->where('user_id', Auth::id())
+                ->pluck('activity_id')
+                ->toArray();
+        }
+
         return view('activiteiten', [
-            'isLoggedIn'   => $isLoggedIn,
-            'activiteiten' => $activiteiten,
+            'isLoggedIn'         => $isLoggedIn,
+            'activiteiten'       => $activiteiten,
+            'userInschrijvingen' => $userInschrijvingen,
         ]);
     }
 
@@ -89,33 +98,50 @@ class ActiviteitenController extends Controller
     }
 
     public function authSignup(Request $request)
+{
+    $validated = $request->validate([
+        'activity_id' => ['required', 'integer', 'exists:activities,id'],
+    ]);
+
+    $user   = Auth::user();
+    $email  = $user->email;
+    $userId = $user->id;
+
+    $activity = Activity::findOrFail($validated['activity_id']);
+
+    // Capaciteit
+    if ($this->capacityLeft($activity) <= 0) {
+        return back()->withErrors(['activity_id' => 'Deze activiteit zit vol.']);
+    }
+
+    // Dubbele inschrijving
+    if ($this->alreadySignedUp($userId, $activity->id)) {
+        return back()->withErrors(['activity_id' => 'Je bent al ingeschreven voor deze activiteit.']);
+    }
+
+    // Opslaan
+    DB::table('inschrijvingen')->insert([
+        'activity_id' => $activity->id,
+        'user_id'     => $userId,
+        'guest_email' => $email,   // e-mail van account ook bewaren
+        'created_at'  => now(),
+        'updated_at'  => now(),
+    ]);
+
+    return back()->with('success', 'Je bent ingeschreven!');
+}
+
+    public function unsubscribe(Request $request)
     {
         $validated = $request->validate([
             'activity_id' => ['required', 'integer', 'exists:activities,id'],
         ]);
 
-        $user   = Auth::user();
-        $email  = $user->email;              // <— pak mail van het account
-        $userId = $user->id;
+        DB::table('inschrijvingen')
+            ->where('activity_id', $validated['activity_id'])
+            ->where('user_id', Auth::id())
+            ->delete();
 
-        $activity = Activity::findOrFail($validated['activity_id']);
-
-        // (capacity & duplicate checks zoals eerder)
-
-        DB::table('inschrijvingen')->insert([
-            'activity_id' => $activity->id,
-            'user_id'     => $userId,
-            'guest_email' => $email,         // <— SLA OP (ook voor medewerkers)
-            'created_at'  => now(),
-            'updated_at'  => now(),
-        ]);
-
-        Log::info('Medewerker ingeschreven', [
-            'user_id'     => $userId,
-            'email'       => $email,
-            'activity_id' => $activity->id,
-        ]);
-
-        return back()->with('success', 'Je bent ingeschreven!');
+        return back()->with('success', 'Je bent uitgeschreven.');
     }
 }

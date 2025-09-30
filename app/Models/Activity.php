@@ -21,7 +21,10 @@ class Activity extends Model
         'gasten' => 'boolean',
     ];
 
-    public function inschrijvingen()
-{
-    return $this->hasMany(\App\Models\Inschrijving::class, 'activity_id');
-}
+       public function inschrijvingen()
+    {
+        // Maak (desnoods tijdelijk) een simpel model voor de tabel 'inschrijvingen'
+        return $this->hasMany(\App\Models\Inschrijving::class, 'activity_id');
+    }
+    
+    }
