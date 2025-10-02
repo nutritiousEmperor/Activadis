@@ -85,4 +85,11 @@ class AdminActiviteitenController extends Controller
         return redirect()->route('admin.activiteiten.index') 
             ->with('success', 'Activiteit succesvol verwijderd!'); 
     } 
+
+    public function show($id)
+{
+    $activity = Activity::findOrFail($id);
+    return view('admin.activiteiten.detailActiviteit', compact('activity'));
+}
+
 } 
