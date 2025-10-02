@@ -1,4 +1,6 @@
-@php use Carbon\Carbon; @endphp
+@php
+    use Carbon\Carbon;
+@endphp
 
 {{-- Header --}}
 <div
@@ -16,10 +18,10 @@
             </form>
         @else
             <a href="{{ route('login') }}"
-                style="padding:8px 12px; border-radius:8px; background:#2563eb; color:white; text-decoration:none;">Inloggen</a>
+               style="padding:8px 12px; border-radius:8px; background:#2563eb; color:white; text-decoration:none;">Inloggen</a>
             @if (Route::has('register'))
                 <a href="{{ route('register') }}"
-                    style="margin-left:8px; padding:8px 12px; border-radius:8px; background:#10b981; color:white; text-decoration:none;">Registreren</a>
+                   style="margin-left:8px; padding:8px 12px; border-radius:8px; background:#10b981; color:white; text-decoration:none;">Registreren</a>
             @endif
         @endauth
     </div>
@@ -61,6 +63,12 @@
         @php
             $datum = $a->date ? Carbon::parse($a->date)->format('d-m-Y') : '-';
             $tijd = $a->time ? Carbon::parse($a->time)->format('H:i') : '-';
+
+            // Bestanden voor slider ophalen
+            $dir   = public_path('activity_photos/'.$a->id);
+            $files = file_exists($dir)
+                ? array_values(array_filter(scandir($dir), fn($f) => preg_match('/\.(jpe?g|png|webp|gif)$/i', $f)))
+                : [];
         @endphp
 
         <div style="border:1px solid #e5e7eb; padding:16px; margin:12px 0; border-radius:8px;">
@@ -97,38 +105,125 @@
             @if(!is_null($a->max_participants))
                 <p>
                     <strong>Deelnemers:</strong> {{ $a->inschrijvingen_count }}/{{ $a->max_participants }}
-
                 </p>
             @endif
 
-                        @auth
-                            @if(in_array($a->id, $userInschrijvingen))
-                                <form method="POST" action="{{ route('activiteiten.unsubscribe') }}">
-                                    @csrf
-                                    @method('DELETE')
-                                    <input type="hidden" name="activity_id" value="{{ $a->id }}">
-                                    <button type="submit" style="margin-top:8px; padding:8px 12px; border-radius:8px; background:#dc2626; color:white; border:none; cursor:pointer;">Uitschrijven</button>
-                                </form>
-                            @else
-                                <form method="POST" action="{{ route('activiteiten.auth') }}">
-                                    @csrf
-                                    <input type="hidden" name="activity_id" value="{{ $a->id }}">
-                                    <button type="submit" style="margin-top:8px; padding:8px 12px; border-radius:8px; background:#16a34a; color:white; border:none; cursor:pointer;">Inschrijven</button>
-                                </form>
-                            @endif
-                        @endauth
-                        @guest
-                            {{-- Gast: toon knop alleen als gasten welkom zijn --}}
-                            @if(!empty($a->gasten))
-                                <button class="inschrijf-btn" data-activity="{{ $a->id }}"
-                                    style="margin-top:8px; padding:8px 12px; border-radius:8px; background:#2563eb; color:white; border:none; cursor:pointer;">Inschrijven</button>
-                            @endif
-                        @endguest
+            {{-- === Gallerij / slider === --}}
+            <div class="activity-slider" style="position:relative; margin-top:12px;">
+                @if(count($files))
+                    <div class="slides" style="position:relative; overflow:hidden; border-radius:10px; height:220px;">
+                        @foreach($files as $i => $file)
+                            <img
+                                src="{{ asset('activity_photos/'.$a->id.'/'.$file) }}"
+                                alt="Foto {{ $i+1 }} van {{ $a->title }}"
+                                loading="lazy"
+                                style="position:absolute; inset:0; width:100%; height:100%; object-fit:cover; transition:opacity .35s; opacity:{{ $i === 0 ? '1' : '0' }};">
+                        @endforeach
+                    </div>
+
+                    {{-- Controls --}}
+                    <button class="nav prev" aria-label="Vorige"
+                        style="position:absolute; top:50%; left:8px; transform:translateY(-50%);
+                               background:rgba(0,0,0,.5); color:#fff; border:none; width:36px; height:36px; border-radius:50%; cursor:pointer;">
+                        ‹
+                    </button>
+                    <button class="nav next" aria-label="Volgende"
+                        style="position:absolute; top:50%; right:8px; transform:translateY(-50%);
+                               background:rgba(0,0,0,.5); color:#fff; border:none; width:36px; height:36px; border-radius:50%; cursor:pointer;">
+                        ›
+                    </button>
+
+                    {{-- Dots --}}
+                    <div class="dots" style="position:absolute; left:0; right:0; bottom:8px; display:flex; gap:6px; justify-content:center;">
+                        @foreach($files as $i => $file)
+                            <span data-index="{{ $i }}"
+                                  style="width:8px; height:8px; border-radius:9999px; background:{{ $i===0 ? '#111827' : '#d1d5db' }}; display:inline-block; cursor:pointer;"></span>
+                        @endforeach
+                    </div>
+                @else
+                    {{-- Geen foto’s: placeholder --}}
+                    <div style="height:220px; border-radius:10px; overflow:hidden; background:#f3f4f6; display:flex; align-items:center; justify-content:center;">
+                        <img src="{{ asset('images/activity-placeholder.jpg') }}"
+                             alt="Geen foto beschikbaar"
+                             style="width:100%; height:100%; object-fit:cover; opacity:.9;">
+                    </div>
+                @endif
+            </div>
+
+            {{-- Inschrijfknoppen --}}
+            @auth
+                @if(in_array($a->id, $userInschrijvingen))
+                    <form method="POST" action="{{ route('activiteiten.unsubscribe') }}">
+                        @csrf
+                        @method('DELETE')
+                        <input type="hidden" name="activity_id" value="{{ $a->id }}">
+                        <button type="submit" style="margin-top:8px; padding:8px 12px; border-radius:8px; background:#dc2626; color:white; border:none; cursor:pointer;">Uitschrijven</button>
+                    </form>
+                @else
+                    <form method="POST" action="{{ route('activiteiten.auth') }}">
+                        @csrf
+                        <input type="hidden" name="activity_id" value="{{ $a->id }}">
+                        <button type="submit" style="margin-top:8px; padding:8px 12px; border-radius:8px; background:#16a34a; color:white; border:none; cursor:pointer;">Inschrijven</button>
+                    </form>
+                @endif
+            @endauth
+
+            @guest
+                {{-- Gast: toon knop alleen als gasten welkom zijn --}}
+                @if(!empty($a->gasten))
+                    <button class="inschrijf-btn" data-activity="{{ $a->id }}"
+                        style="margin-top:8px; padding:8px 12px; border-radius:8px; background:#2563eb; color:white; border:none; cursor:pointer;">
+                        Inschrijven
+                    </button>
+                @endif
+            @endguest
         </div>
     @empty
         <p>Geen activiteiten gevonden.</p>
     @endforelse
 </div>
+
+{{-- Slider script (eenmalig) --}}
+@once
+<script>
+(function(){
+    function initSlider(root){
+        const slidesEl = root.querySelector('.slides');
+        if (!slidesEl) return;
+
+        const slides = Array.from(slidesEl.querySelectorAll('img'));
+        if (slides.length === 0) return;
+
+        let index = 0;
+        const dots  = Array.from(root.querySelectorAll('.dots span'));
+        const prev  = root.querySelector('.nav.prev');
+        const next  = root.querySelector('.nav.next');
+
+        function show(i){
+            index = (i + slides.length) % slides.length;
+            slides.forEach((img, k) => img.style.opacity = k === index ? '1' : '0');
+            dots.forEach((d, k) => d.style.background = k === index ? '#111827' : '#d1d5db');
+        }
+
+        prev?.addEventListener('click', () => show(index - 1));
+        next?.addEventListener('click', () => show(index + 1));
+        dots.forEach(d => d.addEventListener('click', () => show(+d.dataset.index)));
+
+        // Swipe support
+        let startX = null;
+        slidesEl.addEventListener('touchstart', e => startX = e.touches[0].clientX, {passive:true});
+        slidesEl.addEventListener('touchend', e => {
+            if (startX === null) return;
+            const dx = e.changedTouches[0].clientX - startX;
+            if (Math.abs(dx) > 40) show(index + (dx < 0 ? 1 : -1));
+            startX = null;
+        });
+    }
+
+    document.querySelectorAll('.activity-slider').forEach(initSlider);
+})();
+</script>
+@endonce
 
 {{-- Popup voor gasten --}}
 @guest

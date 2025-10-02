@@ -33,25 +33,25 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
 
+    // Profiel
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
-
     Route::middleware('role:user')->delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    
-    Route::post('/activiteiten/inschrijven', [ActiviteitenController::class, 'authSignup'])
-        ->middleware(['auth'])
-        ->name('activiteiten.auth');
+    // In-/uitschrijven activiteiten (voor ingelogde users)
+    Route::post('/activiteiten/inschrijven', [ActiviteitenController::class, 'authSignup'])->name('activiteiten.auth');
+    Route::delete('/activiteiten/uitschrijven', [ActiviteitenController::class, 'unsubscribe'])->name('activiteiten.unsubscribe');
 
-        Route::delete('/activiteiten/uitschrijven', [ActiviteitenController::class, 'unsubscribe'])
-            ->middleware(['auth'])
-            ->name('activiteiten.unsubscribe');
+    // Admin: activiteiten (alleen admins)
+    Route::middleware('auth')->group(function () {
+        Route::resource('/admin/activiteiten', AdminActiviteitenController::class)->names('admin.activiteiten');
 
-
-    Route::resource('/admin/activiteiten', AdminActiviteitenController::class)->names('admin.activiteiten');
-
-        
+        // Foto upload voor bestaande activiteit (meerdere of losse upload)
+        Route::post('/admin/activiteiten/{activity}/photo', [AdminActiviteitenController::class, 'updatePhoto'])
+            ->whereNumber('activity')
+            ->name('admin.activiteiten.photo');
+    });
 });
 
 // Admin dashboard:

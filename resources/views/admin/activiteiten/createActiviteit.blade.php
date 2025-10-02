@@ -28,12 +28,12 @@
                 Swal.fire({
                     title: 'Oeps!',
                     html: `
-                            <ul style="text-align: left;">
-                                @foreach ($errors->all() as $error)
-                                    <li>{{ $error }}</li>
-                                @endforeach
-                            </ul>
-                        `,
+                                    <ul style="text-align: left;">
+                                        @foreach ($errors->all() as $error)
+                                            <li>{{ $error }}</li>
+                                        @endforeach
+                                    </ul>
+                                `,
                     icon: 'error',
                     confirmButtonText: 'OK',
                     confirmButtonColor: '#fbbf24',
@@ -47,7 +47,7 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <form method="POST" action="{{ route('admin.activiteiten.store') }}">
+                    <form method="POST" action="{{ route('admin.activiteiten.store') }}" enctype="multipart/form-data">
                         @csrf
 
                         <div class="mb-4">
@@ -97,6 +97,13 @@
                             <span class="ml-2">Ja</span>
                         </div>
 
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700">Foto's</label>
+                            <input type="file" name="activity_photos[]" multiple
+                                accept="image/jpeg,image/png,image/webp"
+                                class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-covadisyellow focus:border-covadisyellow">
+                            <p class="text-sm text-gray-500 mt-1">Je kunt meerdere afbeeldingen selecteren.</p>
+                        </div>
 
                         <button type="submit"
                             class="w-full bg-covadisyellow bg-yellow-500 text-covadisblue font-semibold py-2 px-4 rounded-lg shadow-md transition">
