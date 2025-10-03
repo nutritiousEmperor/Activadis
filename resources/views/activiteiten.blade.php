@@ -47,7 +47,7 @@
                         ? array_values(array_filter(scandir($dir), fn($f) => preg_match('/\.(jpe?g|png|webp|gif)$/i', $f)))
                         : [];
 
-                    // Payload voor quick view
+                    
                     $images  = array_map(fn($f) => asset("activity_photos/{$a->id}/{$f}"), $files);
                     $payload = [
                         'id'    => $a->id,
@@ -67,7 +67,7 @@
 
                 <div class="rounded-2xl border border-secondary/10 bg-white shadow-sm hover:shadow-md transition flex flex-col">
                     <div class="p-5">
-                        {{-- Titel + badge --}}
+                      
                         <div class="flex flex-wrap items-center gap-2">
                             <h2 class="text-lg font-semibold text-primary">
                                 {{ $a->title }}
@@ -83,7 +83,7 @@
                             @endif
                         </div>
 
-                        {{-- Meta --}}
+                        
                         <div class="mt-2 text-sm text-secondary/80">
                             <p class="leading-6">
                                 <span class="font-medium text-primary">Datum:</span> {{ $datum }}
@@ -104,7 +104,7 @@
                         </div>
                     </div>
 
-                    {{-- Slider (klikbaar voor quick view) --}}
+                    {{-- Slider  --}}
                     <div class="relative mt-1 px-5" data-payload='@json($payload)'>
                         @if(count($files))
                             <div class="slides relative overflow-hidden rounded-xl h-48 md:h-56 bg-taps cursor-zoom-in">
@@ -117,11 +117,11 @@
                                 @endforeach
                             </div>
 
-                            {{-- Prev/Next --}}
+                            
                             <button class="nav prev absolute left-8 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-9 h-9 rounded-full bg-primary/70 text-white hover:bg-primary transition" aria-label="Vorige">‹</button>
                             <button class="nav next absolute right-8 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-9 h-9 rounded-full bg-primary/70 text-white hover:bg-primary transition" aria-label="Volgende">›</button>
 
-                            {{-- Dots --}}
+                            
                             <div class="dots absolute left-0 right-0 -bottom-3 flex items-center justify-center gap-2">
                                 @foreach($files as $i => $file)
                                     <span data-index="{{ $i }}" class="h-2.5 w-2.5 rounded-full {{ $i === 0 ? 'bg-main' : 'bg-secondary/30' }} cursor-pointer"></span>
@@ -136,7 +136,7 @@
 
                     {{-- Acties onderaan --}}
                     <div class="p-5 mt-auto">
-                        {{-- Details (open modal) --}}
+                        
                         <button type="button"
                                 class="inline-flex items-center px-4 py-2 rounded-lg border border-secondary/20 text-secondary hover:bg-secondary/5 mr-2"
                                 onclick='window.dispatchEvent(new CustomEvent("open-activity",{ detail: @json($payload) }))'>
@@ -183,7 +183,7 @@
         </div>
     </div>
 
-    {{-- Quick View Modal --}}
+    {{-- Modal --}}
     <div id="activityModal"
          x-data="activityModal()"
          x-show="isOpen"
@@ -244,7 +244,7 @@
 
                     <div class="mt-3 text-secondary/90 whitespace-pre-line" x-text="data.description"></div>
 
-                    {{-- Acties in modal --}}
+                    
                     @auth
                         <div class="mt-4">
   <template x-if="data.gasten">
@@ -299,7 +299,7 @@
                     next?.addEventListener('click', () => show(index + 1));
                     dots.forEach(d => d.addEventListener('click', () => show(+d.dataset.index)));
 
-                    // slider klik => open quick view
+                   
                     slidesEl.addEventListener('click', () => {
                         try {
                             const detail = JSON.parse(container.dataset.payload || '{}');
@@ -307,7 +307,7 @@
                         } catch(e) {}
                     });
 
-                    // swipe (mobiel)
+                    
                     let startX = null;
                     slidesEl.addEventListener('touchstart', e => startX = e.touches[0].clientX, { passive: true });
                     slidesEl.addEventListener('touchend', e => {
@@ -321,7 +321,7 @@
                 document.querySelectorAll('.rounded-2xl').forEach(card => initSlider(card));
             })();
 
-            // Alpine store voor quick view
+          
             function activityModal(){
   return {
     isOpen: false,
