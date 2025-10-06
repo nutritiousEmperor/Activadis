@@ -7,7 +7,7 @@
     Vervolgens krijgt u de mogelijkheid om een wachtwoord in te stellen.
 </p>
 
-@component('mail::button', ['url' => 'https://google.com'])
+@component('mail::button', ['url' => 'http://localhost:8000/register'])
     Wachtwoord aanpassen
 @endcomponent
 
