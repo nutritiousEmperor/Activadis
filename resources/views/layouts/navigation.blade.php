@@ -86,16 +86,11 @@
                 <!-- Guest knoppen (desktop) -->
                 <div class="hidden sm:flex sm:items-center sm:ms-6 gap-3">
                     <a href="{{ route('login') }}"
-                       class="inline-flex items-center px-3 py-2 rounded-md font-medium bg-main text-primary hover:brightness-95">
+                         class="inline-flex items-center px-3 py-2 rounded-md font-medium border border-white/20 text-white hover:bg-white/10">
+
                         {{ __('Inloggen') }}
                     </a>
 
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}"
-                           class="inline-flex items-center px-3 py-2 rounded-md font-medium border border-white/20 text-white hover:bg-white/10">
-                            {{ __('Registreren') }}
-                        </a>
-                    @endif
                 </div>
             @endguest
 
