@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Functie;
-
+use App\Models\UserFunction;
 
 class FunctionController extends Controller
 {
@@ -13,9 +13,22 @@ class FunctionController extends Controller
      */
     public function index()
     {
-        $functions = Functie::all(); // let op: gebruik Functie i.p.v. Functions
-        return view('admin.medewerkers.functions.index', compact('functions'));
+        $functions = Functie::all();
+        $userFunction = UserFunction::all();
+        return view('admin.medewerkers.functions.index', compact('functions', 'userFunction'));
     }
+    
+    public function show(string $id)
+    {
+        // Zoek de functie op basis van id of geef een 404 als deze niet bestaat
+        $function = Functie::findOrFail($id);
+        $userFunctions = UserFunction::where('functie_id', $id)->get();
+
+        // Geef de show-view terug met het gevonden function object
+        return view('admin.medewerkers.functions.show', compact('function', 'userFunctions'));
+    }
+    
+
     /**
      * Show the form for creating a new resource.
      */
@@ -33,20 +46,12 @@ class FunctionController extends Controller
             'naam' => 'required|string|max:255',
         ]);
 
-        Functions::create([
+        Functie::create([
             'naam' => $request->naam,
         ]);
 
-        return redirect()->route('admin.medewerkers.functies.create')
-                        ->with('status', 'functie-created');
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
+        return redirect()->route('admin.medewerkers.functies.index')
+                         ->with('success', 'Functie succesvol aangemaakt!');
     }
 
     /**
@@ -54,7 +59,8 @@ class FunctionController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $function = Functie::findOrFail($id);
+        return view('admin.medewerkers.functions.edit', compact('function'));
     }
 
     /**
@@ -62,7 +68,17 @@ class FunctionController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $request->validate([
+            'naam' => 'required|string|max:255',
+        ]);
+
+        $function = Functie::findOrFail($id);
+        $function->update([
+            'naam' => $request->naam,
+        ]);
+
+        return redirect()->route('admin.medewerkers.functies.index')
+                         ->with('success', 'Functie succesvol bijgewerkt!');
     }
 
     /**
@@ -70,6 +86,10 @@ class FunctionController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $function = Functie::findOrFail($id);
+        $function->delete();
+
+        return redirect()->route('admin.medewerkers.functies.index')
+                         ->with('success', 'Functie succesvol verwijderd!');
     }
 }

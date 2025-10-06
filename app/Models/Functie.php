@@ -14,4 +14,9 @@ class Functie extends Model
     protected $fillable = [
         'naam',
     ];
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'user_functions', 'functie_id', 'user_id');
+    }
 }

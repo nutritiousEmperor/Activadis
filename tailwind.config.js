@@ -17,7 +17,17 @@ export default {
             colors: {
                 primary: '#0b0c2f',
                 secondary: '#0f1f3b',
-                main: '#fba21a',
+                main: {
+                    100: "#feecd1",
+                    200: "#fddaa3",
+                    300: "#fdc776",
+                    400: "#fcb548",
+                    500: "#fba21a",
+                    600: "#c98215",
+                    700: "#976110",
+                    800: "#64410a",
+                    900: "#322005"
+                },
                 maindark: '#f79704',
                 taps: '#eaf4f7',
             },

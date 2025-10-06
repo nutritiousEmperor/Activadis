@@ -7,13 +7,16 @@
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 
-                <form method="POST" action="{{ route('functies.update', $functie->id) }}" class="mt-6 space-y-6">
+                <a href="{{ route('admin.medewerkers.functies.index') }}"
+                    class="inline-flex items-center  bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
+                    ↩ terug
+                </a>
+                <form method="POST" action="{{ route('admin.medewerkers.functies.update', $function->id) }}" class="mt-6 space-y-6">
                     @csrf
                     @method('PUT')
 
-                    <!-- Functie Naam -->
                     <div>
                         <x-input-label for="naam" :value="__('Functie Naam')" />
                         <x-text-input 
@@ -23,7 +26,7 @@
                             class="mt-1 block w-full" 
                             required 
                             autofocus 
-                            :value="old('naam', $functie->naam)" 
+                            :value="old('naam', $function->naam)" 
                         />
                         <x-input-error class="mt-2" :messages="$errors->get('naam')" />
                     </div>

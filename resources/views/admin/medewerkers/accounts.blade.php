@@ -20,7 +20,7 @@
                             + Nieuwe Medewerker
                         </a>
                         <a href="{{ route('admin.medewerkers.functies.index') }}"
-                            class="inline-flex items-center  bg-main text-white px-4 py-2 rounded hover:bg-maindark">
+                            class="inline-flex items-center  bg-main-500 text-white px-4 py-2 rounded hover:bg-main-600">
                            Functies
                         </a>
                     </div>
@@ -44,7 +44,13 @@
                                         <div class="text-gray-500">{{ $user->email }}</div>
                                     </td>
                                     <td>
-                                        <div class="text-gray-500">{{ $user->functie ?? '-' }}</div>
+                                        <div class="text-gray-500">
+                                            @if($user->functies->count() > 0)
+                                                {{ $user->functies->pluck('naam')->join(', ') }}
+                                            @else
+                                                -
+                                            @endif
+                                        </div>
                                     </td>
                                     <td>{{ ucfirst($user->role) }}</td>
                                     <td>

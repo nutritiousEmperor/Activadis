@@ -47,7 +47,9 @@ Route::middleware('auth')->group(function () {
 
 
     Route::resource('/admin/activiteiten', AdminActiviteitenController::class)->names('admin.activiteiten');
-    Route::resource('/admin/functies', FunctionController::class)->names('admin.medewerkers.functies');
+    Route::prefix('admin/medewerkers')->name('admin.medewerkers.')->group(function () {
+        Route::resource('functies', FunctionController::class);
+    });
 
         
 });
