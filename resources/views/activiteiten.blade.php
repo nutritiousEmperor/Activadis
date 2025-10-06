@@ -34,7 +34,7 @@
 
     {{-- Lijst --}}
     <div class="max-w-7xl mx-auto px-6 py-6">
-        <h1 class="text-2xl font-bold text-main mb-4">Beschikbare activiteiten</h1>
+        <h1 class="text-2xl font-bold text-main mb-4 text-white">Beschikbare activiteiten</h1>
 
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             @forelse($activiteiten as $a)
