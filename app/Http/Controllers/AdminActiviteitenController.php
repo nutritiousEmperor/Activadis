@@ -178,4 +178,10 @@ class AdminActiviteitenController extends Controller
 
         return back()->with('success', $deleted . ' foto' . ($deleted === 1 ? '' : '’s') . ' verwijderd.');
     }
+
+    public function show($id)
+    {
+        $activity = Activity::findOrFail($id);
+        return view('admin.activiteiten.detailActiviteit', compact('activity'));
+    }
 }
