@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Models\Activity;
+use App\Mail\InschrijvingActiviteit;
+use Illuminate\Support\Facades\Mail;
 
 class ActiviteitenController extends Controller
 {
@@ -94,6 +96,15 @@ class ActiviteitenController extends Controller
 
         Log::info('Gast ingeschreven', $validated);
 
+        // Mailing
+        $name = 'Gast';
+        $data = [
+            'name'    => $name,
+            'activiteit' => $activity,
+        ];
+
+        Mail::to($validated['email'])->send(new InschrijvingActiviteit($data));
+
         return back()->with('success', 'Bedankt! We hebben je inschrijving ontvangen.');
     }
 
@@ -127,6 +138,16 @@ class ActiviteitenController extends Controller
         'created_at'  => now(),
         'updated_at'  => now(),
     ]);
+
+    // Mailing
+    $name = $user->name;
+    $data = [
+        'name'    => $name,
+        'activiteit' => $activity,
+    ];
+
+    Mail::to($user->email)->send(new InschrijvingActiviteit($data));
+
 
     return back()->with('success', 'Je bent ingeschreven!');
 }
