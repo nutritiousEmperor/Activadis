@@ -14,10 +14,14 @@
                 
                 <div class="p-6 text-gray-900">
                     <div
-                        class="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between mb-6">
+                        class="flex flex-col sm:flex-row gap-4 items-start  mb-6">
                         <a href="{{ route('admin.registerUser') }}"
                             class="inline-flex items-center  bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
                             + Nieuwe Medewerker
+                        </a>
+                        <a href="{{ route('admin.medewerkers.functies.index') }}"
+                            class="inline-flex items-center  bg-main-500 text-white px-4 py-2 rounded hover:bg-main-600">
+                           Functies
                         </a>
                     </div>
                         <div class="overflow-x-auto">
@@ -40,7 +44,13 @@
                                         <div class="text-gray-500">{{ $user->email }}</div>
                                     </td>
                                     <td>
-                                        <div class="text-gray-500">{{ $user->functie ?? '-' }}</div>
+                                        <div class="text-gray-500">
+                                            @if($user->functies->count() > 0)
+                                                {{ $user->functies->pluck('naam')->join(', ') }}
+                                            @else
+                                                -
+                                            @endif
+                                        </div>
                                     </td>
                                     <td>{{ ucfirst($user->role) }}</td>
                                     <td class="flex gap-2 ml-2">

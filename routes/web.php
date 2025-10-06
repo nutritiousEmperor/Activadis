@@ -6,6 +6,8 @@ use App\Http\Controllers\AdminController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ActiviteitenController;
 use App\Http\Controllers\AdminActiviteitenController;
+use App\Http\Controllers\FunctionController;
+
 use App\Http\Controllers\MailController;
 
 Route::get('/', [ActiviteitenController::class, 'index'])
@@ -47,9 +49,10 @@ Route::middleware('auth')->group(function () {
     Route::middleware('auth')->group(function () {
         Route::resource('/admin/activiteiten', AdminActiviteitenController::class)->names('admin.activiteiten');
 
-        // NIEUW: meerdere foto’s uploaden
-        Route::post('/admin/activiteiten/{activity}/photos', [AdminActiviteitenController::class, 'photosUpload'])
-            ->whereNumber('activity')->name('admin.activiteiten.photos.upload');
+    Route::resource('/admin/activiteiten', AdminActiviteitenController::class)->names('admin.activiteiten');
+    Route::prefix('admin/medewerkers')->name('admin.medewerkers.')->group(function () {
+        Route::resource('functies', FunctionController::class);
+    });
 
         // NIEUW: meerdere foto’s verwijderen
         Route::delete('/admin/activiteiten/{activity}/photos', [AdminActiviteitenController::class, 'photosDelete'])
