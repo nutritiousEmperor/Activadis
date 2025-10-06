@@ -16,13 +16,13 @@
 
         <div>
             <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" autocomplete="functie" :value="old('name', $user->name)"/>
+            <x-text-input id="name" name="name" type="text" class="mt-1 block w-full" required autofocus autocomplete="name" autocomplete="functie"/>
             <x-input-error class="mt-2" :messages="$errors->get('name')" />
         </div>
 
         <div>
             <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="username" autocomplete="functie" :value="old('email', $user->email)"/>
+            <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" required autocomplete="username" autocomplete="functie"/>
             <x-input-error class="mt-2" :messages="$errors->get('email')" />
 
            
@@ -78,12 +78,10 @@
         <div>
             <x-input-label for="role" :value="__('Rol voor account')" />
 
-            <input type="radio" name="role" id="rol-user" value="user"
-                {{ old('role', $user->role) === 'user' ? 'checked' : '' }}>
+            <input type="radio" name="role" id="rol-user" value="user">
             <label for="rol-user">User</label> <br>
 
-            <input type="radio" name="role" id="rol-admin" value="admin"
-                {{ old('role', $user->role) === 'admin' ? 'checked' : '' }}>
+            <input type="radio" name="role" id="rol-admin" value="admin">
             <label for="rol-admin">Admin</label>
 
             <x-input-error class="mt-2" :messages="$errors->get('role')" />

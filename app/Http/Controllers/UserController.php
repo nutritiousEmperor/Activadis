@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Functie;
+use Illuminate\Support\Facades\Password;
 
 class UserController extends Controller
 {
@@ -69,6 +70,7 @@ class UserController extends Controller
             'password' => Hash::make($password),
             'role' => $request->role,
         ]);
+        Password::sendInitialSetPasswordLink(['email' => $user->email]);
 
         // Functies synchroniseren via pivot table
         $user->functies()->sync($request->functions ?? []);
@@ -141,6 +143,8 @@ class UserController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $user = User::findOrFail($id);
+        $user->delete();
+        return redirect()->route('admin.acounts')->with('success', 'User deleted successfully!');
     }
 }

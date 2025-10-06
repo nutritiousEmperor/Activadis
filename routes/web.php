@@ -8,6 +8,7 @@ use App\Http\Controllers\ActiviteitenController;
 use App\Http\Controllers\AdminActiviteitenController;
 use App\Http\Controllers\FunctionController;
 
+use App\Http\Controllers\MailController;
 
 Route::get('/', [ActiviteitenController::class, 'index'])
     ->name('activiteiten.index');
@@ -18,14 +19,14 @@ Route::post('/activiteiten/inschrijven/guest', [ActiviteitenController::class, '
 
 
 
-  
-  Route::middleware(['auth'])->group(function () {
+
+Route::middleware(['auth'])->group(function () {
     // Admin dashboard
     Route::get('/admin/activities', [AdminController::class, 'createActiviteit'])->name('admin.activities.create');
 
     // Activiteit opslaan
     Route::post('/admin/activities', [AdminController::class, 'store'])->name('admin.activities.store');
-  });
+});
 
 
 Route::get('/dashboard', function () {
@@ -34,24 +35,33 @@ Route::get('/dashboard', function () {
 
 Route::middleware('auth')->group(function () {
 
+    // Profiel
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::patch('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo.update');
-
     Route::middleware('role:user')->delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    
-    Route::post('/activiteiten/inschrijven', [ActiviteitenController::class, 'authSignup'])
-        ->middleware(['auth'])
-        ->name('activiteiten.auth');
+    // In-/uitschrijven activiteiten (voor ingelogde users)
+    Route::post('/activiteiten/inschrijven', [ActiviteitenController::class, 'authSignup'])->name('activiteiten.auth');
+    Route::delete('/activiteiten/uitschrijven', [ActiviteitenController::class, 'unsubscribe'])->name('activiteiten.unsubscribe');
 
+    // Admin: activiteiten (alleen admins)
+    Route::middleware('auth')->group(function () {
+        Route::resource('/admin/activiteiten', AdminActiviteitenController::class)->names('admin.activiteiten');
 
     Route::resource('/admin/activiteiten', AdminActiviteitenController::class)->names('admin.activiteiten');
     Route::prefix('admin/medewerkers')->name('admin.medewerkers.')->group(function () {
         Route::resource('functies', FunctionController::class);
     });
 
-        
+        // NIEUW: meerdere foto’s verwijderen
+        Route::delete('/admin/activiteiten/{activity}/photos', [AdminActiviteitenController::class, 'photosDelete'])
+            ->whereNumber('activity')->name('admin.activiteiten.photos.delete');
+
+        // OUD: single upload (route moet naar uploadPhoto, niet updatePhoto)
+        Route::post('/admin/activiteiten/{activity}/photo', [AdminActiviteitenController::class, 'uploadPhoto'])
+            ->whereNumber('activity')->name('admin.activiteiten.photo');
+    });
 });
 
 // Admin dashboard:
@@ -71,5 +81,11 @@ Route::get('/admin/profile/{id}', [UserController::class, 'profile'])->name('adm
 
 // Update profile page:
 Route::post('/admin/registerAccount/{id}', [UserController::class, 'update'])->name('registerAccount.update');
+
+// Delete user:
+Route::delete('/admin/users/{id}', [UserController::class, 'destroy'])->name('admin.deleteUser');
+
+// Mail controller:
+Route::get('/mail/signup', [MailController::class, 'createPassword'])->name('mail.createPassword');
 
 require __DIR__.'/auth.php';
