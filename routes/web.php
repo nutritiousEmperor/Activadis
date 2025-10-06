@@ -48,6 +48,7 @@ Route::middleware('auth')->group(function () {
     // Admin: activiteiten (alleen admins)
     Route::middleware('auth')->group(function () {
 
+        Route::resource('/admin/activiteiten', AdminActiviteitenController::class)->names('admin.activiteiten');
         // NIEUW: meerdere foto’s uploaden
         Route::post('/admin/activiteiten/{activity}/photos', [AdminActiviteitenController::class, 'photosUpload'])
             ->whereNumber('activity')->name('admin.activiteiten.photos.upload');
