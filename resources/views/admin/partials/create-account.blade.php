@@ -34,6 +34,7 @@
 
             <div x-data="{ 
                 open: false, 
+                selected: @js(old('functions', $userFunctions ?? [])), 
                 options: @js($functions) 
             }" class="relative w-full">
                 <!-- Button -->
