@@ -42,7 +42,6 @@ class AdminActiviteitenController extends Controller
 
         ]);
 
-        // Activiteit eerst opslaan
         $activity = Activity::create([
             'title' => $request->title,
             'description' => $request->description,
