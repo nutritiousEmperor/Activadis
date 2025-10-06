@@ -178,7 +178,7 @@
                     </div>
                 </div>
             @empty
-                <p class="text-secondary">Geen activiteiten gevonden.</p>
+                <p class="text-main-100">Geen activiteiten gevonden.</p>
             @endforelse
         </div>
     </div>
