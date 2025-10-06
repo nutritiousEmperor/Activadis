@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 
 class UserController extends Controller
 {
@@ -63,13 +64,14 @@ class UserController extends Controller
             'email' => 'required|email|unique:users,email',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $name,
             'email' => $email,
             'password' => Hash::make($wachtwoord),
             'functie' => $functie,
             'role' => $role
         ]);
+        Password::sendInitialSetPasswordLink(['email' => $user->email]);
 
         return redirect()->route('admin.registerUser')->with('success', 'User created successfully!');
     }
