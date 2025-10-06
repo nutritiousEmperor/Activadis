@@ -9,14 +9,14 @@ class Inschrijving extends Model
     protected $table = 'inschrijvingen';
 
     protected $fillable = [
-        'activiteit_id',
+        'activity_id',
         'user_id',
         'guest_email',
     ];
 
-    public function activiteit()
+    public function activity()
     {
-        return $this->belongsTo(Activiteit::class, 'activiteit_id');
+        return $this->belongsTo(Activity::class, 'activity_id');
     }
 
     public function user()
