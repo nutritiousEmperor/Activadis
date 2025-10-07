@@ -30,7 +30,7 @@
                                 <tr class="text-left text-gray-500">
                                     <th>Naam</th>
                                     <th>Email</th>
-                                    <th>functie</th>
+                                    <th>Functie</th>
                                     <th>Role</th>
                                     <th>Acties</th>
                                 </tr>
@@ -54,22 +54,31 @@
                                     </td>
                                     <td>{{ ucfirst($user->role) }}</td>
                                     <td class="flex gap-2 ml-2">
-                                        <div class="flex items-center gap-2">
-                                            <a href="/admin/profile/{{ $user->id }}"class="text-blue-600 hover:underline">
-                                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-pencil-icon lucide-pencil"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"/><path d="m15 5 4 4"/></svg>
+                                            <a href="/admin/profile/{{ $user->id }}" class="text-main-500 hover:underline">
+                                                <svg xmlns="http://www.w3.org/2000/svg"
+                                                    class="lucide lucide-pencil w-4 h-4"
+                                                    fill="none" viewBox="0 0 24 24"
+                                                    stroke="currentColor" stroke-width="2"
+                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M12 20h9"></path>
+                                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+                                                </svg>
                                             </a>
-                                        </div>
-
-
-                                        <div class="flex items-center gap-2">
-                                        <form action="{{ route('admin.deleteUser', $user->id) }}" method="POST" onsubmit="return confirm('Weet je zeker dat je deze gebruiker wilt verwijderen?');">
-                                            @csrf
-                                            @method('DELETE')
-                                            <button type="submit" class="text-red-600 hover:text-red-800">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash2-icon lucide-trash-2"><path d="M10 11v6"/><path d="M14 11v6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/><path d="M3 6h18"/><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-                                            </button>
-                                        </form>
-                                        </div>
+                                            <form action="{{ route('admin.deleteUser', $user->id) }}" method="POST" onsubmit="return confirm('Weet je zeker dat je deze gebruiker wilt verwijderen?');">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="text-red-600 hover:underline">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" 
+                                                        class="lucide lucide-trash w-4 h-4" 
+                                                        fill="none" viewBox="0 0 24 24" 
+                                                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <path d="M3 6h18"></path>
+                                                        <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                                                        <path d="M10 11v6"></path>
+                                                        <path d="M14 11v6"></path>
+                                                    </svg>
+                                                </button>
+                                            </form>
                                     </td>
                                     </tr>
                                 @endforeach

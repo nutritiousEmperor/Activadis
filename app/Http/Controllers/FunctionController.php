@@ -20,12 +20,13 @@ class FunctionController extends Controller
     
     public function show(string $id)
     {
+        $users = User::all();
         // Zoek de functie op basis van id of geef een 404 als deze niet bestaat
         $function = Functie::findOrFail($id);
         $userFunctions = UserFunction::where('functie_id', $id)->get();
 
         // Geef de show-view terug met het gevonden function object
-        return view('admin.medewerkers.functions.show', compact('function', 'userFunctions'));
+        return view('admin.medewerkers.functions.show', compact('function', 'userFunctions', 'users'));
     }
     
 

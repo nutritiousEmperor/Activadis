@@ -28,7 +28,7 @@
            
         </div>
 
-
+        <!--
         <div>
             <x-input-label for="functions" :value="__('Functies')" />
 
@@ -37,7 +37,6 @@
                 selected: @js(old('functions', $userFunctions ?? [])), 
                 options: @js($functions) 
             }" class="relative w-full">
-                <!-- Button -->
                 <button type="button" @click="open = !open"
                     class="w-full flex justify-between items-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none">
                     <span 
@@ -50,7 +49,6 @@
                     </svg>
                 </button>
 
-                <!-- Dropdown -->
                 <div x-show="open" @click.outside="open = false"
                     class="absolute mt-1 w-full rounded-lg bg-white shadow-lg border border-gray-200 z-10">
                     <ul class="max-h-60 overflow-y-auto p-2 text-sm">
@@ -66,14 +64,57 @@
                     </ul>
                 </div>
 
-                <!-- Hidden inputs zodat Laravel de IDs ontvangt -->
                 <template x-for="value in selected" :key="value">
                     <input type="hidden" name="functions[]" :value="value">
                 </template>
             </div>
 
             <x-input-error class="mt-2" :messages="$errors->get('functions')" />
+        </div> -->
+
+        <div>
+            <x-input-label for="function" :value="__('Functie')" />
+
+            <div x-data="{ 
+                open: false, 
+                selected: @js(old('function', $userFunctions ?? null)), 
+                options: @js($functions) 
+            }" class="relative w-full">
+
+                <button type="button" @click="open = !open"
+                    class="w-full flex justify-between items-center rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm shadow-sm focus:outline-none">
+                    <span 
+                        x-text="selected 
+                            ? (options.find(o => o.id == selected)?.naam ?? 'Kies optie') 
+                            : 'Kies optie'">
+                    </span>
+                    <svg class="w-4 h-4 ml-2 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+                    </svg>
+                </button>
+
+                <div x-show="open" @click.outside="open = false"
+                    class="absolute mt-1 w-full rounded-lg bg-white shadow-lg border border-gray-200 z-10">
+                    <ul class="max-h-60 overflow-y-auto p-2 text-sm">
+                        <template x-for="option in options" :key="option.id">
+                            <li>
+                                <button type="button" 
+                                    @click="selected = option.id; open = false"
+                                    class="w-full text-left p-2 hover:bg-gray-100 rounded">
+                                    <span x-text="option.naam"></span>
+                                </button>
+                            </li>
+                        </template>
+                    </ul>
+                </div>
+
+                <!-- ✅ Gebruik :value in plaats van x-model -->
+                <input type="hidden" name="function" :value="selected">
+            </div>
+
+            <x-input-error class="mt-2" :messages="$errors->get('function')" />
         </div>
+
 
 
         <div>
