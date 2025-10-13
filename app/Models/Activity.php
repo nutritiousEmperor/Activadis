@@ -3,28 +3,30 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes; // ✅ toegevoegd
 
 class Activity extends Model
 {
-    
+    use SoftDeletes; // ✅ zorgt voor soft delete-functionaliteit
+
     protected $fillable = [
-    'title',
-    'description',
-    'date',
-    'time',
-    'location',
-    'max_participants',
-    'gasten',
-];
+        'title',
+        'description',
+        'date',
+        'time',
+        'location',
+        'max_participants',
+        'gasten',
+    ];
 
     protected $casts = [
         'gasten' => 'boolean',
     ];
 
-       public function inschrijvingen()
+    protected $dates = ['deleted_at']; // ✅ Laravel weet dat dit een datumveld is
+
+    public function inschrijvingen()
     {
-        // Maak (desnoods tijdelijk) een simpel model voor de tabel 'inschrijvingen'
         return $this->hasMany(\App\Models\Inschrijving::class, 'activity_id');
     }
-    
-    }
+}
