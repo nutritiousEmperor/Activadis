@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Functie;
 use App\Models\UserFunction;
+use App\Models\User;
 
 class FunctionController extends Controller
 {
@@ -87,10 +88,29 @@ class FunctionController extends Controller
      */
     public function destroy(string $id)
     {
+        $exists = UserFunction::where('functie_id', $id)->exists();
+        if ($exists == true) {
+            return redirect()
+                ->back()
+                ->with('error', 'Er is nog een gebruiker gekoppelt aan deze functie!');
+        }
+
+
         $function = Functie::findOrFail($id);
         $function->delete();
 
         return redirect()->route('admin.medewerkers.functies.index')
                          ->with('success', 'Functie succesvol verwijderd!');
+    }
+
+    
+    public function destroyUser(string $id, string $showid)
+    {
+        $user = User::findOrFail($id);
+        $user->delete();
+        return redirect()
+            ->route('admin.medewerkers.functies.show', $showid)
+            ->with('success', 'User deleted successfully!');
+
     }
 }

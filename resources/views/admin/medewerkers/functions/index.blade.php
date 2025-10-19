@@ -4,6 +4,7 @@
             {{ __('Account beheer') }}
         </h2>
     </x-slot>
+    
 
 
 
@@ -54,7 +55,7 @@
                                                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
                                                 </svg>
                                             </a>
-                                            <form action="{{ route('admin.medewerkers.functies.destroy', $function->id) }}" method="POST" onsubmit="return confirm('Weet je zeker dat je dit wilt verwijderen?')">
+                                            <form action="{{ route('admin.medewerkers.functies.destroy', $function->id) }}" method="POST" data-swal-confirm="Weet je zeker dat je deze functie wilt verwijderen?">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:underline">
