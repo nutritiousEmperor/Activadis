@@ -16,7 +16,45 @@
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     </head>
-    <body class="font-sans text-gray-900 antialiased">
+    <body class="font-sans text-gray-900 antialiased">    
+        @if ($errors->any())
+            <script>
+                @foreach ($errors->all() as $error)
+                    Swal.fire({
+                        position: "top",
+                        icon: "error",
+                        title: "{{ $error }}",
+                        showConfirmButton: false,
+                        timer: 5000,
+                        toast: true
+                    });
+                @endforeach
+            </script>
+        @endif
+        @if (session('error'))
+            <script>
+                Swal.fire({
+                    position: "top",
+                    icon: "error",
+                    title: "{{ session('error') }}",
+                    showConfirmButton: false,
+                    timer: 4000,
+                    toast: true
+                });
+            </script>
+        @endif
+        @if (session('success'))
+            <script>
+                Swal.fire({
+                    position: "top",
+                    icon: "success",
+                    title: "{{ session('success') }}",
+                    showConfirmButton: false,
+                    timer: 3000,
+                    toast: true
+                });
+            </script>
+        @endif
         <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-secondary">
             <div>
                 <a href="/">
@@ -29,4 +67,26 @@
             </div>
         </div>
     </body>
+    <script>
+            
+        document.querySelectorAll('form[data-swal-confirm]').forEach(form => {
+            form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const message = form.dataset.swalConfirm || 'Weet je het zeker?';
+
+            Swal.fire({
+                title: 'Weet je het zeker?',
+                text: message,
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ja, verwijderen',
+                cancelButtonText: 'Nee, annuleren',
+                reverseButtons: true
+            }).then(result => {
+                if (result.isConfirmed) {
+                    form.submit();
+                });
+            });
+        });
+    </script>
 </html>

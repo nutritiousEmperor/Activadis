@@ -80,7 +80,7 @@
             
         document.querySelectorAll('form[data-swal-confirm]').forEach(form => {
             form.addEventListener('submit', function(e) {
-            e.preventDefault(); // stop directe submit
+            e.preventDefault(); 
             const message = form.dataset.swalConfirm || 'Weet je het zeker?';
 
             Swal.fire({
@@ -93,9 +93,8 @@
                 reverseButtons: true
             }).then(result => {
                 if (result.isConfirmed) {
-                // als je extra CSRF-token of headers nodig hebt (bv. rails), zorg dat die op het form staan.
-                form.submit();
-                } // anders niets doen (geannuleerd)
+                    form.submit();
+                }
             });
             });
         });
