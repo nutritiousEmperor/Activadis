@@ -169,7 +169,7 @@ class AdminActiviteitenController extends Controller
     public function destroy(string $id)
     {
         $activity = Activity::findOrFail($id);
-        $activity->delete();
+        $activity->delete(); // ✅ soft delete nu actief
 
         return redirect()->route('admin.activiteiten.index')
             ->with('success', 'Activiteit succesvol verwijderd!');

@@ -28,12 +28,12 @@
                 Swal.fire({
                     title: 'Oeps!',
                     html: `
-                                        <ul style="text-align: left;">
-                                            @foreach ($errors->all() as $error)
-                                                <li>{{ $error }}</li>
-                                            @endforeach
-                                        </ul>
-                                    `,
+                            <ul style="text-align: left;">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        `,
                     icon: 'error',
                     confirmButtonText: 'OK',
                     confirmButtonColor: '#fbbf24',
@@ -57,10 +57,22 @@
                                 required>
                         </div>
 
+                        <!-- ✅ Aangepast veld: Omschrijving met karakterlimiet -->
                         <div class="mb-4">
                             <label class="block text-sm font-medium text-gray-700">Omschrijving</label>
-                            <textarea name="description" rows="3"
-                                class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-covadisyellow focus:border-covadisyellow"></textarea>
+                            <textarea 
+                                name="description" 
+                                id="description" 
+                                rows="3"
+                                maxlength="300"
+                                class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-covadisyellow focus:border-covadisyellow"
+                                oninput="updateCharCount()"
+                                placeholder="Beschrijf de activiteit..."
+                            ></textarea>
+
+                            <div class="flex justify-end text-sm text-gray-500 mt-1">
+                                <span id="charCount">0</span><span>/ 300 tekens</span>
+                            </div>
                         </div>
 
                         <div class="mb-4">
@@ -91,13 +103,6 @@
                                 required>
                         </div>
                         <div class="mb-6">
-                            <label class="block text-sm font-medium text-gray-700">Min deelnemers</label>
-                            <input type="number" name="min_participants" min="1"
-                                value="{{ old('min_participants', $activity->min_participants ?? '') }}"
-                                class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-covadisyellow focus:border-covadisyellow">
-                        </div>
-                        
-                        <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Gasten toegestaan?</label>
                             <input type="checkbox" name="gasten" value="1"
                                 class="rounded border-gray-300 text-covadisyellow focus:ring-covadisyellow">
@@ -121,4 +126,13 @@
             </div>
         </div>
     </div>
+
+    <!-- ✅ Script voor live karaktertelling -->
+    <script>
+        function updateCharCount() {
+            const textarea = document.getElementById('description');
+            const count = textarea.value.length;
+            document.getElementById('charCount').innerText = count;
+        }
+    </script>
 </x-app-layout>
