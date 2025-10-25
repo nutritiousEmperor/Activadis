@@ -9,13 +9,18 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Activity;
 use App\Mail\InschrijvingActiviteit;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+
 
 class ActiviteitenController extends Controller
 {
     public function index()
     {
-        $query = Activity::withCount('inschrijvingen')
-            ->orderBy('date')->orderBy('time');
+        $query = Activity::withCount(['inschrijvingen' => function ($q) {
+            $q->where('confirmed', true); 
+        }])
+        ->orderBy('date')
+        ->orderBy('time');
 
         if (!Auth::check()) {
             $query->where('gasten', true);
@@ -43,7 +48,11 @@ class ActiviteitenController extends Controller
     // ====== helpers ======
     protected function capacityLeft(Activity $activity): int
     {
-        $count = DB::table('inschrijvingen')->where('activity_id', $activity->id)->count();
+        $count = DB::table('inschrijvingen')
+            ->where('activity_id', $activity->id)
+            ->where('confirmed', true)
+            ->count();
+
         return max(0, (int)$activity->max_participants - $count);
     }
 
@@ -85,11 +94,16 @@ class ActiviteitenController extends Controller
             return back()->withErrors(['email' => 'Je bent al ingeschreven met dit e-mailadres.']);
         }
 
+        // Genereer random token voor het bevestigen van de inschrijving later in de mail:
+        $token = Str::random(64);
+
         // Opslaan
         DB::table('inschrijvingen')->insert([
             'activity_id' => $activity->id,
             'user_id'     => null,
             'guest_email' => $validated['email'],
+            'confirmationToken' => $token,
+            'confirmed'          => false,
             'created_at'  => now(),
             'updated_at'  => now(),
         ]);
@@ -101,6 +115,7 @@ class ActiviteitenController extends Controller
         $data = [
             'name'    => $name,
             'activiteit' => $activity,
+            'token'   => $token
         ];
 
         Mail::to($validated['email'])->send(new InschrijvingActiviteit($data));
