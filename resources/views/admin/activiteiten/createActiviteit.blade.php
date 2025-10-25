@@ -28,12 +28,12 @@
                 Swal.fire({
                     title: 'Oeps!',
                     html: `
-                                    <ul style="text-align: left;">
-                                        @foreach ($errors->all() as $error)
-                                            <li>{{ $error }}</li>
-                                        @endforeach
-                                    </ul>
-                                `,
+                                        <ul style="text-align: left;">
+                                            @foreach ($errors->all() as $error)
+                                                <li>{{ $error }}</li>
+                                            @endforeach
+                                        </ul>
+                                    `,
                     icon: 'error',
                     confirmButtonText: 'OK',
                     confirmButtonColor: '#fbbf24',
@@ -90,6 +90,13 @@
                                 class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-covadisyellow focus:border-covadisyellow"
                                 required>
                         </div>
+                        <div class="mb-6">
+                            <label class="block text-sm font-medium text-gray-700">Min deelnemers</label>
+                            <input type="number" name="min_participants" min="1"
+                                value="{{ old('min_participants', $activity->min_participants ?? '') }}"
+                                class="mt-1 block w-full border-gray-300 rounded-lg shadow-sm focus:ring-covadisyellow focus:border-covadisyellow">
+                        </div>
+                        
                         <div class="mb-6">
                             <label class="block text-sm font-medium text-gray-700 mb-2">Gasten toegestaan?</label>
                             <input type="checkbox" name="gasten" value="1"

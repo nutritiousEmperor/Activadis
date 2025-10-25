@@ -1,6 +1,3 @@
-@php
-    use Carbon\Carbon;
-@endphp
 <x-app-layout>
     <x-slot name="header"></x-slot>
 
@@ -39,27 +36,38 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
             @forelse($activiteiten as $a)
                 @php
-                    $datum = $a->date ? Carbon::parse($a->date)->format('d-m-Y') : '-';
-                    $tijd  = $a->time ? Carbon::parse($a->time)->format('H:i') : '-';
+                    $datum = $a->date ? \Carbon\Carbon::parse($a->date)->format('d-m-Y') : '-';
+                    $tijd  = $a->time ? \Carbon\Carbon::parse($a->time)->format('H:i') : '-';
 
                     $dir   = public_path('activity_photos/'.$a->id);
                     $files = file_exists($dir)
                         ? array_values(array_filter(scandir($dir), fn($f) => preg_match('/\.(jpe?g|png|webp|gif)$/i', $f)))
                         : [];
 
-                    
                     $images  = array_map(fn($f) => asset("activity_photos/{$a->id}/{$f}"), $files);
+
+                    // Kaart-berekeningen voor min
+                    $cnt  = (int) ($a->inschrijvingen_count ?? 0);
+                    $min  = is_null($a->min_participants) ? null : (int) $a->min_participants;
+                    $minReached = !is_null($min) && $cnt >= $min;
+                    $nogNodig   = (!is_null($min) && $cnt < $min) ? ($min - $cnt) : 0;
+
+                    $goal = !is_null($min) ? max(1, $min) : 1;
+                    $pct  = min(100, (int) floor(($cnt / $goal) * 100));
+
+                    // Payload naar Alpine met correcte types
                     $payload = [
-                        'id'    => $a->id,
-                        'title' => $a->title,
-                        'location' => $a->location,
-                        'date'  => $datum,
-                        'time'  => $tijd,
-                        'description' => $a->description,
+                        'id'    => (int) $a->id,
+                        'title' => (string) $a->title,
+                        'location' => $a->location ? (string) $a->location : null,
+                        'date'  => (string) $datum,
+                        'time'  => (string) $tijd,
+                        'description' => (string) ($a->description ?? ''),
                         'gasten' => (bool) $a->gasten,
                         'participants' => [
-                            'count' => $a->inschrijvingen_count,
-                            'max'   => $a->max_participants,
+                            'count' => $cnt,
+                            'max'   => is_null($a->max_participants) ? null : (int) $a->max_participants,
+                            'min'   => $min,
                         ],
                         'images' => $images,
                     ];
@@ -67,7 +75,6 @@
 
                 <div class="rounded-2xl border border-secondary/10 bg-white shadow-sm hover:shadow-md transition flex flex-col">
                     <div class="p-5">
-                      
                         <div class="flex flex-wrap items-center gap-2">
                             <h2 class="text-lg font-semibold text-primary">
                                 {{ $a->title }}
@@ -76,14 +83,19 @@
                                 @endif
                             </h2>
 
-                            @if($a->gasten)
-                                <span class="inline-flex items-center rounded-full bg-taps text-primary text-xs px-3 py-1">Gasten welkom</span>
-                            @else
-                                <span class="inline-flex items-center rounded-full bg-secondary/5 text-secondary text-xs px-3 py-1">Alleen medewerkers</span>
-                            @endif
+                            @auth
+                                @if($a->gasten)
+                                    <span class="inline-flex items-center rounded-full bg-taps text-primary text-xs px-3 py-1">
+                                        Gasten welkom
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center rounded-full bg-secondary/5 text-secondary text-xs px-3 py-1">
+                                        Alleen medewerkers
+                                    </span>
+                                @endif
+                            @endauth
                         </div>
 
-                        
                         <div class="mt-2 text-sm text-secondary/80">
                             <p class="leading-6">
                                 <span class="font-medium text-primary">Datum:</span> {{ $datum }}
@@ -94,17 +106,45 @@
                             @if(!is_null($a->max_participants))
                                 <p class="leading-6">
                                     <span class="font-medium text-primary">Deelnemers:</span>
-                                    {{ $a->inschrijvingen_count }}/{{ $a->max_participants }}
+                                    {{ $cnt }}/{{ (int) $a->max_participants }}
+                                </p>
+                            @else
+                                <p class="leading-6">
+                                    <span class="font-medium text-primary">Deelnemers:</span>
+                                    {{ $cnt }} / ∞
                                 </p>
                             @endif
 
+                            @if(!is_null($min))
+                                <p class="leading-6">
+                                    <span class="font-medium text-primary">Min. deelnemers:</span>
+                                    {{ $min }}
+
+                                    @if(!$minReached)
+                                        <span class="ml-2 inline-flex items-center rounded-full bg-yellow-100 text-yellow-900 text-[11px] px-2 py-0.5">
+                                            Nog {{ $nogNodig }} nodig
+                                        </span>
+                                    @else
+                                        <span class="ml-2 inline-flex items-center rounded-full bg-green-100 text-green-800 text-[11px] px-2 py-0.5">
+                                            Gaat door
+                                        </span>
+                                    @endif
+                                </p>
+
+                                <div class="mt-2 h-1.5 w-full rounded bg-gray-100">
+                                    <div class="h-1.5 rounded {{ $minReached ? 'bg-green-500' : 'bg-yellow-500' }}" style="width: {{ $pct }}%;"></div>
+                                </div>
+                            @endif
+
                             @if($a->description)
-                                <p class="mt-1 text-secondary/90">{{ $a->description }}</p>
+                                <p class="mt-1 text-secondary/90">
+                                    {{ \Illuminate\Support\Str::limit(strip_tags($a->description), 80) }}
+                                </p>
                             @endif
                         </div>
                     </div>
 
-                    {{-- Slider  --}}
+                    {{-- Slider --}}
                     <div class="relative mt-1 px-5" data-payload='@json($payload)'>
                         @if(count($files))
                             <div class="slides relative overflow-hidden rounded-xl h-48 md:h-56 bg-taps cursor-zoom-in">
@@ -117,11 +157,9 @@
                                 @endforeach
                             </div>
 
-                            
                             <button class="nav prev absolute left-8 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-9 h-9 rounded-full bg-primary/70 text-white hover:bg-primary transition" aria-label="Vorige">‹</button>
                             <button class="nav next absolute right-8 top-1/2 -translate-y-1/2 inline-flex items-center justify-center w-9 h-9 rounded-full bg-primary/70 text-white hover:bg-primary transition" aria-label="Volgende">›</button>
 
-                            
                             <div class="dots absolute left-0 right-0 -bottom-3 flex items-center justify-center gap-2">
                                 @foreach($files as $i => $file)
                                     <span data-index="{{ $i }}" class="h-2.5 w-2.5 rounded-full {{ $i === 0 ? 'bg-main' : 'bg-secondary/30' }} cursor-pointer"></span>
@@ -136,7 +174,6 @@
 
                     {{-- Acties onderaan --}}
                     <div class="p-5 mt-auto">
-                        
                         <button type="button"
                                 class="inline-flex items-center px-4 py-2 rounded-lg border border-secondary/20 text-secondary hover:bg-secondary/5 mr-2"
                                 onclick='window.dispatchEvent(new CustomEvent("open-activity",{ detail: @json($payload) }))'>
@@ -196,10 +233,10 @@
         <div class="absolute inset-0 bg-black/60" @click="close()"></div>
 
         <!-- sheet -->
-        <div class="relative mx-auto my-8 w-[95vw] max-w-5xl bg-white rounded-2xl overflow-hidden shadow-xl">
+        <div class="relative mx-auto my-8 w-[96vw] max-w-6xl bg-white rounded-2xl overflow-hidden shadow-xl">
             <div class="flex flex-col md:flex-row">
                 <!-- Gallery -->
-                <div class="md:w-1/2 bg-black relative">
+                <div class="md:w-5/12 bg-black relative">
                     <template x-if="data.images && data.images.length">
                         <div class="relative h-72 md:h-[28rem]">
                             <template x-for="(src,i) in data.images" :key="i">
@@ -227,44 +264,71 @@
                 </div>
 
                 <!-- Details -->
-                <div class="md:w-1/2 p-6">
-                    <h2 class="text-xl font-bold text-primary" x-text="data.title"></h2>
-                    <p class="mt-1 text-sm text-secondary/80" x-show="data.location">
-                        <span class="font-medium text-primary">Locatie:</span> <span x-text="data.location"></span>
-                    </p>
-                    <p class="text-sm text-secondary/80">
-                        <span class="font-medium text-primary">Datum:</span> <span x-text="data.date"></span>
-                        <span class="mx-2">•</span>
-                        <span class="font-medium text-primary">Tijd:</span> <span x-text="data.time"></span>
-                    </p>
-                    <p class="text-sm text-secondary/80" x-show="data.participants && data.participants.max">
-                        <span class="font-medium text-primary">Deelnemers:</span>
-                        <span x-text="data.participants?.count ?? 0"></span>/<span x-text="data.participants?.max ?? '-'"></span>
-                    </p>
+                <div class="md:w-7/12 p-6">
+                    <div class="max-h-[28rem] overflow-y-auto pr-1">
+                        <h2 class="text-xl font-bold text-primary" x-text="data.title"></h2>
+                        <p class="mt-1 text-sm text-secondary/80" x-show="data.location">
+                            <span class="font-medium text-primary">Locatie:</span> <span x-text="data.location"></span>
+                        </p>
+                        <p class="text-sm text-secondary/80">
+                            <span class="font-medium text-primary">Datum:</span> <span x-text="data.date"></span>
+                            <span class="mx-2">•</span>
+                            <span class="font-medium text-primary">Tijd:</span> <span x-text="data.time"></span>
+                        </p>
 
-                    <div class="mt-3 text-secondary/90 whitespace-pre-line" x-text="data.description"></div>
+                        <p class="text-sm text-secondary/80"
+                           x-show="data.participants && (data.participants.max !== null && data.participants.max !== undefined)">
+                            <span class="font-medium text-primary">Deelnemers:</span>
+                            <span x-text="Number(data.participants?.count ?? 0)"></span>/<span x-text="Number(data.participants?.max ?? 0)"></span>
+                        </p>
+                        <p class="text-sm text-secondary/80"
+                           x-show="data.participants && (data.participants.max === null || data.participants.max === undefined)">
+                            <span class="font-medium text-primary">Deelnemers:</span>
+                            <span x-text="Number(data.participants?.count ?? 0)"></span>/∞
+                        </p>
 
-                    
-                    @auth
-                        <div class="mt-4">
-  <template x-if="data.gasten">
-    <span class="inline-flex items-center rounded-full bg-taps text-primary text-xs px-3 py-1">
-      Gasten welkom
-    </span>
-  </template>
-  <template x-if="!data.gasten">
-    <span class="inline-flex items-center rounded-full bg-secondary/5 text-secondary text-xs px-3 py-1">
-      Alleen medewerkers
-    </span>
-  </template>
-</div>
-                    @endauth
+                        <!-- Min.-info ook in de modal -->
+                        <p class="text-sm text-secondary/80"
+                           x-show="data.participants && (data.participants.min !== null && data.participants.min !== undefined)">
+                            <span class="font-medium text-primary">Min. deelnemers:</span>
+                            <span x-text="Number(data.participants.min)"></span>
 
-                    @guest
-                        <div class="mt-5 text-sm text-secondary/80">
-                            Log in om je in te schrijven. Gasten inschrijven kan via de lijst.
-                        </div>
-                    @endguest
+                            <template x-if="Number(data.participants?.count ?? 0) < Number(data.participants?.min ?? 0)">
+                                <span class="ml-2 inline-flex items-center rounded-full bg-yellow-100 text-yellow-900 text-[11px] px-2 py-0.5">
+                                    Nog <span x-text="Math.max(0, Number(data.participants.min ?? 0) - Number(data.participants.count ?? 0))"></span> nodig
+                                </span>
+                            </template>
+                            <template x-if="Number(data.participants?.count ?? 0) >= Number(data.participants?.min ?? 0)">
+                                <span class="ml-2 inline-flex items-center rounded-full bg-green-100 text-green-800 text-[11px] px-2 py-0.5">
+                                    Gaat door
+                                </span>
+                            </template>
+                        </p>
+
+                        <!-- Volledige omschrijving -->
+                        <div class="mt-3 text-secondary/90 whitespace-pre-line" x-text="data.description"></div>
+
+                        @auth
+                            <div class="mt-4">
+                                <template x-if="data.gasten">
+                                  <span class="inline-flex items-center rounded-full bg-taps text-primary text-xs px-3 py-1">
+                                    Gasten welkom
+                                  </span>
+                                </template>
+                                <template x-if="!data.gasten">
+                                  <span class="inline-flex items-center rounded-full bg-secondary/5 text-secondary text-xs px-3 py-1">
+                                    Alleen medewerkers
+                                  </span>
+                                </template>
+                            </div>
+                        @endauth
+
+                        @guest
+                            <div class="mt-5 text-sm text-secondary/80">
+                                Log in om je in te schrijven. Gasten inschrijven kan via de lijst.
+                            </div>
+                        @endguest
+                    </div>
                 </div>
             </div>
         </div>
@@ -299,7 +363,6 @@
                     next?.addEventListener('click', () => show(index + 1));
                     dots.forEach(d => d.addEventListener('click', () => show(+d.dataset.index)));
 
-                   
                     slidesEl.addEventListener('click', () => {
                         try {
                             const detail = JSON.parse(container.dataset.payload || '{}');
@@ -307,7 +370,6 @@
                         } catch(e) {}
                     });
 
-                    
                     let startX = null;
                     slidesEl.addEventListener('touchstart', e => startX = e.touches[0].clientX, { passive: true });
                     slidesEl.addEventListener('touchend', e => {
@@ -321,95 +383,140 @@
                 document.querySelectorAll('.rounded-2xl').forEach(card => initSlider(card));
             })();
 
-          
             function activityModal(){
-  return {
-    isOpen: false,
-    index: 0,
-    data: { images: [] },
-    show(payload){
-      this.data  = payload || { images: [] };
-      this.index = 0;
-      this.isOpen = true;
-      document.documentElement.classList.add('overflow-hidden');
-    },
-    close(){
-      this.isOpen = false;
-      document.documentElement.classList.remove('overflow-hidden');
-    },
-    next(){
-      if(!this.data.images?.length) return;
-      this.index = (this.index + 1) % this.data.images.length;
-    },
-    prev(){
-      if(!this.data.images?.length) return;
-      this.index = (this.index - 1 + this.data.images.length) % this.data.images.length;
-    }
-  }
-}
+              return {
+                isOpen: false,
+                index: 0,
+                data: { images: [] },
+                show(payload){
+                  this.data  = payload || { images: [] };
+                  this.index = 0;
+                  this.isOpen = true;
+                  document.documentElement.classList.add('overflow-hidden');
+                },
+                close(){
+                  this.isOpen = false;
+                  document.documentElement.classList.remove('overflow-hidden');
+                },
+                next(){
+                  if(!this.data.images?.length) return;
+                  this.index = (this.index + 1) % this.data.images.length;
+                },
+                prev(){
+                  if(!this.data.images?.length) return;
+                  this.index = (this.index - 1 + this.data.images.length) % this.data.images.length;
+                }
+              }
+            }
         </script>
     @endonce
 
-    {{-- Popup voor gasten (bestaand) --}}
-    @guest
-        <div id="modal-backdrop" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:50;"></div>
-        <div id="modal"
-            style="display:none; position:fixed; left:50%; top:50%; transform:translate(-50%, -50%);
-                   background:white; border-radius:12px; padding:20px; width:90%; max-width:420px; z-index:51; box-shadow:0 10px 25px rgba(0,0,0,.15);">
-            <h3 style="margin-top:0; font-size:18px; font-weight:700;">Inschrijven als gast</h3>
-            <p style="margin:6px 0 14px;">Vul je e-mailadres in om je in te schrijven.</p>
 
-            <form method="POST" action="{{ route('activiteiten.guest') }}" id="guestForm">
-                @csrf
-                <input type="hidden" name="activity_id" id="activity_id" value="{{ old('activity_id') }}">
-                <div style="margin-bottom:12px;">
-                    <label for="email" style="display:block; margin-bottom:6px; font-weight:600;">E-mail</label>
-                    <input id="email" name="email" type="email" value="{{ old('email') }}" required
-                           style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:8px;">
+   {{-- Popup voor gasten --}}
+@guest
+    <div id="modal-backdrop" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.4); z-index:50;"></div>
+
+    <div id="modal"
+        style="display:none; position:fixed; left:50%; top:50%; transform:translate(-50%, -50%);
+               background:white; border-radius:12px; padding:20px; width:90%; max-width:460px; z-index:51; box-shadow:0 10px 25px rgba(0,0,0,.15);">
+        <h3 style="margin-top:0; font-size:18px; font-weight:700;">Inschrijven als gast</h3>
+        <p style="margin:6px 0 14px;">Vul je naam en e-mail in om je in te schrijven.</p>
+
+        <form method="POST" action="{{ route('activiteiten.guest') }}" id="guestForm" novalidate>
+            @csrf
+            <input type="hidden" name="activity_id" id="activity_id" value="{{ old('activity_id') }}">
+
+            <div style="margin-bottom:12px;">
+                <label for="guest_name" style="display:block; margin-bottom:6px; font-weight:600;">Naam</label>
+                <input id="guest_name" name="guest_name" type="text" value="{{ old('guest_name') }}" required
+                       minlength="2" maxlength="255"
+                       placeholder="Voor- en achternaam"
+                       style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:8px;">
+            </div>
+
+            <div style="margin-bottom:12px;">
+                <label for="email" style="display:block; margin-bottom:6px; font-weight:600;">E-mail</label>
+                <input id="email" name="email" type="email" value="{{ old('email') }}" required
+                       placeholder="jij@example.com"
+                       style="width:100%; padding:10px; border:1px solid #d1d5db; border-radius:8px;">
+            </div>
+
+            {{-- Inline foutjes (server-side) --}}
+            @if ($errors->any())
+                <div style="margin:8px 0 12px; padding:8px; border-radius:8px; background:#fef2f2; border:1px solid #fecaca; color:#7f1d1d; font-size:14px;">
+                    <ul style="margin:0 0 0 18px;">
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
                 </div>
-                <div style="display:flex; gap:8px; justify-content:flex-end;">
-                    <button type="button" id="modal-cancel"
-                            style="padding:8px 12px; border-radius:8px; border:1px solid #d1d5db; background:white; cursor:pointer;">
-                        Annuleren
-                    </button>
-                    <button type="submit"
-                            style="padding:8px 12px; border-radius:8px; background:#16a34a; color:white; border:none; cursor:pointer;">
-                        Verzenden
-                    </button>
-                </div>
-            </form>
-        </div>
+            @endif
 
-        <script>
-            (function () {
-                const backdrop = document.getElementById('modal-backdrop');
-                const modal = document.getElementById('modal');
-                const cancelBtn = document.getElementById('modal-cancel');
-                const idInput = document.getElementById('activity_id');
-                const emailEl = document.getElementById('email');
+            <div style="display:flex; gap:8px; justify-content:flex-end;">
+                <button type="button" id="modal-cancel"
+                        style="padding:8px 12px; border-radius:8px; border:1px solid #d1d5db; background:white; cursor:pointer;">
+                    Annuleren
+                </button>
+                <button type="submit"
+                        style="padding:8px 12px; border-radius:8px; background:#16a34a; color:white; border:none; cursor:pointer;">
+                    Inschrijven
+                </button>
+            </div>
+        </form>
+    </div>
 
-                function openModal(activityId) {
-                    idInput.value = activityId || idInput.value;
-                    backdrop.style.display = 'block';
-                    modal.style.display = 'block';
-                    setTimeout(() => emailEl?.focus(), 0);
+    <script>
+        (function () {
+            const backdrop = document.getElementById('modal-backdrop');
+            const modal    = document.getElementById('modal');
+            const cancelBtn= document.getElementById('modal-cancel');
+            const idInput  = document.getElementById('activity_id');
+            const nameEl   = document.getElementById('guest_name');
+            const emailEl  = document.getElementById('email');
+            const form     = document.getElementById('guestForm');
+
+            function openModal(activityId) {
+                idInput.value = activityId || idInput.value;
+                backdrop.style.display = 'block';
+                modal.style.display = 'block';
+                setTimeout(() => nameEl?.focus(), 0);
+            }
+            function closeModal() {
+                backdrop.style.display = 'none';
+                modal.style.display = 'none';
+            }
+
+            // Koppel aan alle "Inschrijven" knoppen voor gasten
+            document.querySelectorAll('.inschrijf-btn').forEach(btn => {
+                btn.addEventListener('click', () => openModal(btn.dataset.activity));
+            });
+
+            backdrop.addEventListener('click', closeModal);
+            cancelBtn.addEventListener('click', closeModal);
+
+            // Client-side sanity check, want mensen typen alles behalve zinnige dingen
+            form.addEventListener('submit', (e) => {
+                const name  = (nameEl.value || '').trim();
+                const email = (emailEl.value || '').trim();
+                if (name.length < 2) {
+                    e.preventDefault();
+                    alert('Vul een geldige naam in (minimaal 2 tekens).');
+                    nameEl.focus();
+                    return;
                 }
-                function closeModal() {
-                    backdrop.style.display = 'none';
-                    modal.style.display = 'none';
+                if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                    e.preventDefault();
+                    alert('Vul een geldig e-mailadres in.');
+                    emailEl.focus();
+                    return;
                 }
+            });
 
-                document.querySelectorAll('.inschrijf-btn').forEach(btn => {
-                    btn.addEventListener('click', () => openModal(btn.dataset.activity));
-                });
-
-                backdrop.addEventListener('click', closeModal);
-                cancelBtn.addEventListener('click', closeModal);
-
-                @if ($errors->any())
-                    openModal(document.getElementById('activity_id')?.value);
-                @endif
-            })();
-        </script>
-    @endguest
+            // Als er server-side errors waren, heropen de modal met de oude waarden
+            @if ($errors->any())
+                openModal(document.getElementById('activity_id')?.value);
+            @endif
+        })();
+    </script>
+@endguest
 </x-app-layout>
