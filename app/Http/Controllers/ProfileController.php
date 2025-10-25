@@ -34,7 +34,7 @@ class ProfileController extends Controller
 
         $request->file('profile_photo')->move($directory, $filename);
 
-        return redirect()->back()->with('status', 'Profile photo updated successfully!');
+        return redirect()->back()->with('status', 'Profiel foto geupload!');
     }
 
 

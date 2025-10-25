@@ -20,7 +20,6 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'functie',
         'password',
         'role'
     ];
@@ -56,6 +55,16 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return $this->role === 'admin';
+    }
+
+    public function functies()
+    {
+        return $this->belongsToMany(
+            Functie::class,      // het andere model
+            'user_functions',    // pivot table
+            'user_id',           // foreign key in pivot voor deze User
+            'functie_id'         // foreign key in pivot voor Functie
+        );
     }
 
 }
