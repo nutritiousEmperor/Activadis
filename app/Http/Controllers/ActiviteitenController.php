@@ -115,7 +115,8 @@ class ActiviteitenController extends Controller
         $data = [
             'name'    => $name,
             'activiteit' => $activity,
-            'token'   => $token
+            'token'   => $token,
+            'isGuest' => true
         ];
 
         Mail::to($validated['email'])->send(new InschrijvingActiviteit($data));
@@ -150,18 +151,19 @@ class ActiviteitenController extends Controller
         'activity_id' => $activity->id,
         'user_id'     => $userId,
         'guest_email' => $email,   // e-mail van account ook bewaren
+        'confirmationToken' => 'Not needed',
+        'confirmed'          => true,
         'created_at'  => now(),
         'updated_at'  => now(),
     ]);
 
     // Mailing
     $name = $user->name;
-    $data = [
-        'name'    => $name,
+   
+    return view('inschrijving.bevestigd', [
         'activiteit' => $activity,
-    ];
-
-    Mail::to($user->email)->send(new InschrijvingActiviteit($data));
+        'email' => $name, // This is because I want the name of the user to be displayed and this email was originally made for guests but should be for both.
+    ]);
 
 
     return back()->with('success', 'Je bent ingeschreven!');
