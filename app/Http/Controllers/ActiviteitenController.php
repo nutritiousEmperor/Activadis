@@ -11,14 +11,19 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\Activity;
 use App\Models\Inschrijving; // als je dit model hebt; anders kun je DB::table() blijven gebruiken
 use App\Mail\InschrijvingActiviteit;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
+
 
 class ActiviteitenController extends Controller
 {
     public function index()
     {
-        $query = Activity::withCount('inschrijvingen')
-            ->orderBy('date')
-            ->orderBy('time');
+        $query = Activity::withCount(['inschrijvingen' => function ($q) {
+            $q->where('confirmed', true); 
+        }])
+        ->orderBy('date')
+        ->orderBy('time');
 
         // Niet ingelogd: toon alleen activiteiten waar gasten welkom zijn
         if (!Auth::check()) {
@@ -67,15 +72,12 @@ class ActiviteitenController extends Controller
      */
     protected function isFull(Activity $activity): bool
     {
-        if (is_null($activity->max_participants)) {
-            return false;
-        }
-
         $count = DB::table('inschrijvingen')
             ->where('activity_id', $activity->id)
+            ->where('confirmed', true)
             ->count();
 
-        return $count >= (int) $activity->max_participants;
+        return max(0, (int)$activity->max_participants - $count);
     }
 
     /**
@@ -131,12 +133,16 @@ class ActiviteitenController extends Controller
             return back()->withErrors(['email' => 'Je bent al ingeschreven met dit e-mailadres.'])->withInput();
         }
 
+        // Genereer random token voor het bevestigen van de inschrijving later in de mail:
+        $token = Str::random(64);
+
         // Opslaan
         DB::table('inschrijvingen')->insert([
             'activity_id' => $activity->id,
-            'user_id'     => null, // gast
-            'guest_name'  => trim($validated['guest_name']),
-            'guest_email' => $email, // ja, kolom heet bij jou guest_email
+            'user_id'     => null,
+            'guest_email' => $validated['email'],
+            'confirmationToken' => $token,
+            'confirmed'          => false,
             'created_at'  => now(),
             'updated_at'  => now(),
         ]);
@@ -147,20 +153,14 @@ class ActiviteitenController extends Controller
         ]);
 
         // Mailing
-        try {
-            $data = [
-                'name'       => trim($validated['guest_name']),
-                'activiteit' => $activity,
-            ];
-            Mail::to($email)->send(new InschrijvingActiviteit($data));
-        } catch (\Throwable $e) {
-            // Niet huilen als mail faalt; inschrijving is leidend
-            Log::warning('Mail versturen mislukt voor gast-inschrijving', [
-                'activity_id' => $activity->id,
-                'guest_email' => $email,
-                'error'       => $e->getMessage(),
-            ]);
-        }
+        $name = 'Gast';
+        $data = [
+            'name'    => $name,
+            'activiteit' => $activity,
+            'token'   => $token
+        ];
+
+        Mail::to($validated['email'])->send(new InschrijvingActiviteit($data));
 
         return back()->with('success', 'Bedankt! We hebben je inschrijving ontvangen.');
     }
