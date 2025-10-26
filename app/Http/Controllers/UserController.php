@@ -57,8 +57,10 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
             'role' => 'required|string',
-            'functions' => 'array',            // functies is een array
-            'functions.*' => 'exists:functies,id',
+            //'functions' => 'array',       
+            //'functions.*' => 'exists:functies,id',
+            'function' => 'required|exists:functies,id',
+
         ]);
 
         $password = "Covadis123#"; // standaard wachtwoord
@@ -73,7 +75,8 @@ class UserController extends Controller
         Password::sendInitialSetPasswordLink(['email' => $user->email]);
 
         // Functies synchroniseren via pivot table
-        $user->functies()->sync($request->functions ?? []);
+        //$user->functies()->sync($request->functions ?? []);
+        $user->functies()->sync([$request->function]);
 
         return redirect()->route('admin.registerUser')
                         ->with('success', 'User created successfully!');
@@ -111,8 +114,9 @@ class UserController extends Controller
 
     // Validate the input
     $request->validate([
-        'functions' => 'array', // functions is een array
-        'functions.*' => 'exists:functies,id', // elk ID moet bestaan
+        'function' => 'required|exists:functies,id',
+        //'functions' => 'array', // functions is een array
+        //'functions.*' => 'exists:functies,id', // elk ID moet bestaan
         'name' => 'required|string|max:255',
         'email' => 'required|email|unique:users,email,' . $user->id, // ignore current user's email
         'role' => 'required|in:user,admin',
@@ -122,7 +126,8 @@ class UserController extends Controller
 
     
     // functies synchroniseren
-     $user->functies()->sync($request->functions ?? []);
+     //$user->functies()->sync($request->functions ?? []);
+    $user->functies()->sync([$request->function]);
 
     // Update user
     $user->update([

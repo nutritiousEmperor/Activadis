@@ -4,9 +4,9 @@
             {{ __('Account beheer') }}
         </h2>
     </x-slot>
-
-
     
+
+
 
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
@@ -17,11 +17,11 @@
                         class="flex flex-col sm:flex-row gap-4 items-start mb-6">
                         <a href="{{ route('admin.acounts') }}"
                             class="inline-flex items-center  bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                            ↩ terug
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-undo2-icon lucide-undo-2"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 5.5 5.5a5.5 5.5 0 0 1-5.5 5.5H11"/></svg> Terug
                         </a>
                         <a href="{{ route('admin.medewerkers.functies.create') }}"
                             class="inline-flex items-center  bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">
-                            + Nieuwe functie
+                            + Nieuwe Functie
                         </a>
                     </div>
                         <div class="overflow-x-auto">
@@ -55,7 +55,7 @@
                                                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
                                                 </svg>
                                             </a>
-                                            <form action="{{ route('admin.medewerkers.functies.destroy', $function->id) }}" method="POST" onsubmit="return confirm('Weet je zeker dat je dit wilt verwijderen?')">
+                                            <form action="{{ route('admin.medewerkers.functies.destroy', $function->id) }}" method="POST" data-swal-confirm="Weet je zeker dat je deze functie wilt verwijderen?">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:underline">

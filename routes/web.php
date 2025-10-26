@@ -74,6 +74,8 @@ Route::middleware('auth')->group(function () {
 
         Route::prefix('admin/medewerkers')->name('admin.medewerkers.')->group(function () {
             Route::resource('functies', FunctionController::class);
+            Route::delete('/users/{id}/{showid}', [FunctionController::class, 'destroyUser'])
+                ->name('functieuser.destroy');
         });
 
         // NIEUW: meerdere foto’s verwijderen
