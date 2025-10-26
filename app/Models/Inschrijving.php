@@ -11,6 +11,7 @@ class Inschrijving extends Model
     protected $fillable = [
         'activity_id',
         'user_id',
+        'guest_name',
         'guest_email',
     ];
 
