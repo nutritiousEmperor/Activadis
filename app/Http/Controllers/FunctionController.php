@@ -110,7 +110,7 @@ class FunctionController extends Controller
         $user->delete();
         return redirect()
             ->route('admin.medewerkers.functies.show', $showid)
-            ->with('success', 'User deleted successfully!');
+            ->with('success', 'Gebuiker succesvol verwijderd!');
 
     }
 }

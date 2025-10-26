@@ -26,7 +26,7 @@
                                         <th>Titel</th> 
                                         <th>Datum</th> 
                                         <th>Locatie</th> 
-                                        <th class="text-center">Acties</th> 
+                                        <th>Acties</th> 
                                     </tr> 
                                 </thead> 
                                 <tbody> 
@@ -36,26 +36,28 @@
                                             <td>{{ \Carbon\Carbon::parse($activity->date)->format('d-m-Y') }}</td> 
                                             <td>{{ $activity->location }}</td> 
                                             <td> 
-                                                <div class="flex items-center justify-center gap-4"> 
+                                                <div class="flex items-center gap-2">
                                                     
                                                     <!-- Details knop -->
                                                     <a href="{{ route('admin.activiteiten.show', $activity->id) }}" 
-                                                       class="text-blue-600 hover:text-blue-800" 
-                                                       title="Details"> 
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> 
-                                                            <path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path> 
-                                                            <circle cx="12" cy="12" r="3"></circle> 
-                                                        </svg> 
+                                                       class="text-blue-600 hover:underline" 
+                                                       title="Details">                                                 
+                                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eye w-4 h-4" data-lov-id="src/components/admin/ReservationManagement.tsx:234:24" data-lov-name="Eye" data-component-path="src/components/admin/ReservationManagement.tsx" data-component-line="234" data-component-file="ReservationManagement.tsx" data-component-name="Eye" data-component-content="%7B%22className%22%3A%22w-4%20h-4%22%7D"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
+
                                                     </a> 
 
                                                     <!-- Bewerken knop --> 
                                                     <a href="{{ route('admin.activiteiten.edit', $activity->id) }}"  
-                                                       class="text-yellow-500 hover:text-yellow-700" 
+                                                       class="text-main-500 hover:underline" 
                                                        title="Bewerken"> 
-                                                        <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> 
-                                                            <path d="M11 4h2M4 20h16M4 20l4-4h8l4 4"></path> 
-                                                            <path d="M15 3l6 6-9 9H6v-6l9-9z"></path> 
-                                                        </svg> 
+                                                        <svg xmlns="http://www.w3.org/2000/svg"
+                                                            class="lucide lucide-pencil w-4 h-4"
+                                                            fill="none" viewBox="0 0 24 24"
+                                                            stroke="currentColor" stroke-width="2"
+                                                            stroke-linecap="round" stroke-linejoin="round">
+                                                            <path d="M12 20h9"></path>
+                                                            <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
+                                                        </svg>
                                                     </a> 
 
                                                     <!-- Verwijderen knop --> 
@@ -64,10 +66,16 @@
                                                           class="delete-form inline"> 
                                                         @csrf 
                                                         @method('DELETE') 
-                                                        <button type="button" class="delete-button text-red-600 hover:text-red-800" title="Verwijderen"> 
-                                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"> 
-                                                                <path d="M3 6h18M9 6V4h6v2m2 0v14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2V6h10z"/> 
-                                                            </svg> 
+                                                        <button type="button" class="delete-button text-red-600 " title="Verwijderen"> 
+                                                            <svg xmlns="http://www.w3.org/2000/svg" 
+                                                                class="lucide lucide-trash w-4 h-4" 
+                                                                fill="none" viewBox="0 0 24 24" 
+                                                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                                <path d="M3 6h18"></path>
+                                                                <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                                                                <path d="M10 11v6"></path>
+                                                                <path d="M14 11v6"></path>
+                                                            </svg>
                                                         </button> 
                                                     </form> 
 

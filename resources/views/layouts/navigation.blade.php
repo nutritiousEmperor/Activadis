@@ -74,7 +74,7 @@
                                 @csrf
                                 <x-dropdown-link :href="route('logout')"
                                                  onclick="event.preventDefault(); this.closest('form').submit();">
-                                    {{ __('Log Out') }}
+                                    {{ __('Log uit') }}
                                 </x-dropdown-link>
                             </form>
                         </x-slot>
@@ -143,7 +143,7 @@
                         @csrf
                         <x-responsive-nav-link :href="route('logout')"
                                                onclick="event.preventDefault(); this.closest('form').submit();">
-                            {{ __('Log Out') }}
+                            {{ __('Log uit') }}
                         </x-responsive-nav-link>
                     </form>
                 </div>
@@ -157,11 +157,6 @@
                     <x-responsive-nav-link :href="route('login')">
                         {{ __('Inloggen') }}
                     </x-responsive-nav-link>
-                    @if (Route::has('register'))
-                        <x-responsive-nav-link :href="route('register')">
-                            {{ __('Registreren') }}
-                        </x-responsive-nav-link>
-                    @endif
                 </div>
             @endauth
         </div>

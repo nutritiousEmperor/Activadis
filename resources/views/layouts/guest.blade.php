@@ -14,6 +14,8 @@
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
         <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+        <link rel="icon" href="{{ asset('img/logo_fav.svg') }}" type="image/svg+xml">
+
 
     </head>
     <body class="font-sans text-gray-900 antialiased">    

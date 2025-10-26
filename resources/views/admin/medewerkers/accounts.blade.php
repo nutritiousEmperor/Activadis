@@ -53,7 +53,7 @@
                                         </div>
                                     </td>
                                     <td>{{ ucfirst($user->role) }}</td>
-                                    <td class="flex gap-2 ml-2">
+                                    <td class="flex items-center gap-2">
                                             <a href="/admin/profile/{{ $user->id }}" class="text-main-500 hover:underline">
                                                 <svg xmlns="http://www.w3.org/2000/svg"
                                                     class="lucide lucide-pencil w-4 h-4"
@@ -64,7 +64,7 @@
                                                     <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
                                                 </svg>
                                             </a>
-                                            <form action="{{ route('admin.deleteUser', $user->id) }}" method="POST" onsubmit="return confirm('Weet je zeker dat je deze gebruiker wilt verwijderen?');">
+                                            <form action="{{ route('admin.deleteUser', $user->id) }}" method="POST" data-swal-confirm="Weet je zeker dat je deze gebruiker wilt verwijderen?">
                                                 @csrf
                                                 @method('DELETE')
                                                 <button type="submit" class="text-red-600 hover:underline">

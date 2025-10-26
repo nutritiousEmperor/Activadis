@@ -79,7 +79,7 @@ class UserController extends Controller
         $user->functies()->sync([$request->function]);
 
         return redirect()->route('admin.registerUser')
-                        ->with('success', 'User created successfully!');
+                        ->with('success', 'Gebruiker succesvol aangemaakt!');
     }
 
 
@@ -150,6 +150,6 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $user->delete();
-        return redirect()->route('admin.acounts')->with('success', 'User deleted successfully!');
+        return redirect()->route('admin.acounts')->with('success', 'Gebruiker succesvol verwijderd!');
     }
 }
