@@ -59,14 +59,12 @@
                                                             <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"></path>
                                                         </svg>
                                                     </a> 
-
-                                                    <!-- Verwijderen knop --> 
                                                     <form action="{{ route('admin.activiteiten.destroy', $activity->id) }}" 
-                                                          method="POST" 
-                                                          class="delete-form inline"> 
-                                                        @csrf 
-                                                        @method('DELETE') 
-                                                        <button type="button" class="delete-button text-red-600 " title="Verwijderen"> 
+                                                        method="POST" 
+                                                        data-swal-confirm="Weet je zeker dat je deze activiteit wilt verwijderen?">
+                                                        @csrf
+                                                        @method('DELETE')
+                                                        <button type="submit" class="text-red-600 hover:underline">
                                                             <svg xmlns="http://www.w3.org/2000/svg" 
                                                                 class="lucide lucide-trash w-4 h-4" 
                                                                 fill="none" viewBox="0 0 24 24" 
@@ -76,8 +74,9 @@
                                                                 <path d="M10 11v6"></path>
                                                                 <path d="M14 11v6"></path>
                                                             </svg>
-                                                        </button> 
-                                                    </form> 
+                                                        </button>
+                                                    </form>
+
 
                                                 </div> 
                                             </td> 
@@ -95,32 +94,4 @@
         </div> 
     </div> 
 
-    <!-- SweetAlert2 script -->
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            const deleteButtons = document.querySelectorAll(".delete-button");
-
-            deleteButtons.forEach(button => {
-                button.addEventListener("click", function () {
-                    let form = this.closest("form");
-
-                    Swal.fire({
-                        title: "Weet je het zeker?",
-                        text: "Je kunt dit niet ongedaan maken!",
-                        icon: "warning",
-                        showCancelButton: true,
-                        confirmButtonColor: "#3085d6",
-                        cancelButtonColor: "#d33",
-                        confirmButtonText: "Ja, verwijderen!",
-                        cancelButtonText: "Annuleren"
-                    }).then((result) => {
-                        if (result.isConfirmed) {
-                            form.submit();
-                        }
-                    });
-                });
-            });
-        });
-    </script>
 </x-app-layout>

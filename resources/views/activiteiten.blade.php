@@ -1,33 +1,6 @@
 <x-app-layout>
     <x-slot name="header"></x-slot>
 
-    {{-- Één centrale toast (success + errors) --}}
-    @if (session('success') || $errors->any())
-        <div id="toast" style="max-width:960px;margin:0 auto 12px; padding:10px;border-radius:10px;
-                              background: {{ session('success') ? '#d1fae5' : '#fee2e2' }};
-                              border:1px solid {{ session('success') ? '#a7f3d0' : '#fecaca' }};">
-            @if (session('success'))
-                {{ session('success') }}
-            @endif
-            @if ($errors->any())
-                <div style="margin-top:6px;">
-                    <strong>Let op:</strong>
-                    <ul style="margin:6px 0 0 18px;">
-                        @foreach ($errors->all() as $error)
-                            <li>{{ $error }}</li>
-                        @endforeach
-                    </ul>
-                </div>
-            @endif
-        </div>
-        <script>
-            (function () {
-                const el = document.getElementById('toast');
-                if (!el) return;
-                setTimeout(() => { el.style.transition = 'opacity .4s'; el.style.opacity = '0'; setTimeout(() => el.remove(), 400); }, 3000);
-            })();
-        </script>
-    @endif
 
     {{-- Lijst --}}
     <div class="max-w-7xl mx-auto px-6 py-6">
