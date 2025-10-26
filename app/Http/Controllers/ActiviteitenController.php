@@ -11,7 +11,6 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\Activity;
 use App\Models\Inschrijving; // als je dit model hebt; anders kun je DB::table() blijven gebruiken
 use App\Mail\InschrijvingActiviteit;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 
