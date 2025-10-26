@@ -49,6 +49,14 @@ Route::middleware('auth')->group(function () {
     // Admin: activiteiten (alleen admins)
     Route::middleware('auth')->group(function () {
 
+        Route::resource('/admin/activiteiten', AdminActiviteitenController::class)->names('admin.activiteiten');
+
+        Route::get('/admin/activiteiten/{activity}/photos/sort', [AdminActiviteitenController::class, 'photosSort'])
+            ->name('admin.activiteiten.photos.sort');
+
+        Route::post('/admin/activiteiten/{activity}/photos/order', [AdminActiviteitenController::class, 'photosOrder'])
+            ->name('admin.activiteiten.photos.order');
+
         // NIEUW: meerdere foto’s uploaden
         Route::post('/admin/activiteiten/{activity}/photos', [AdminActiviteitenController::class, 'photosUpload'])
             ->whereNumber('activity')->name('admin.activiteiten.photos.upload');
@@ -65,8 +73,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('/admin/activiteiten', AdminActiviteitenController::class)->names('admin.activiteiten');
 
         Route::prefix('admin/medewerkers')->name('admin.medewerkers.')->group(function () {
-        Route::resource('functies', FunctionController::class);
-    });
+            Route::resource('functies', FunctionController::class);
+        });
 
         // NIEUW: meerdere foto’s verwijderen
         Route::delete('/admin/activiteiten/{activity}/photos', [AdminActiviteitenController::class, 'photosDelete'])
