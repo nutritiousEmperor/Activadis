@@ -7,7 +7,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\ActiviteitenController;
 use App\Http\Controllers\AdminActiviteitenController;
 use App\Http\Controllers\FunctionController;
-
+use App\Http\Controllers\InschrijvingController;
 use App\Http\Controllers\MailController;
 
 Route::get('/', [ActiviteitenController::class, 'index'])
@@ -110,5 +110,8 @@ Route::delete('/admin/users/{id}', [UserController::class, 'destroy'])->name('ad
 
 // Mail controller:
 Route::get('/mail/signup', [MailController::class, 'createPassword'])->name('mail.createPassword');
+
+// Bevestig inschrijving route voor gast met temporarySignedRoute:
+Route::get('/inschrijving/bevestigen/{token}',[InschrijvingController::class, 'confirm'])->name('inschrijving.confirm');
 
 require __DIR__ . '/auth.php';
